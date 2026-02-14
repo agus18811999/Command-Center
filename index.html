@@ -1,0 +1,3305 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudentOS | The Ultimate Command Center</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        glass: "rgba(255, 255, 255, 0.05)",
+                        glassBorder: "rgba(255, 255, 255, 0.1)",
+                        academic: "#3b82f6", // Blue
+                        org: "#a855f7", // Purple
+                        comp: "#f97316", // Orange
+                        personal: "#10b981", // Emerald
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.2); 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.2); 
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.3); 
+        }
+
+        /* Ambient Background Animation */
+        body {
+            background-color: #0f172a;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
+                radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+            background-attachment: fixed;
+            background-size: cover;
+        }
+
+        /* Glass Card Utility */
+        .glass-card {
+            background: rgba(17, 25, 40, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .glass-card:hover {
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+
+        /* Progress Bar Animation */
+        @keyframes loadProgress {
+            from { width: 0; }
+        }
+        .progress-fill {
+            animation: loadProgress 1.5s ease-out forwards;
+        }
+        /* Custom Scrollbar untuk kotak kecil */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px; /* Lebar scrollbar tipis */
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+/* Sembunyikan Scrollbar tapi tetap bisa scroll */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 0px;  /* Hilangkan lebar scrollbar vertical */
+    height: 0px; /* Hilangkan tinggi scrollbar horizontal */
+    background: transparent;
+}
+.custom-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+/* Animasi halus untuk modal */
+@keyframes blob {
+    0% { transform: scale(0.95); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+.animate-blob {
+    animation: blob 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+    </style>
+</head>
+<body class="text-slate-200 antialiased min-h-screen selection:bg-purple-500 selection:text-white pb-10">
+
+    <div class="fixed top-20 left-20 w-72 h-72 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+    <div class="fixed top-40 right-20 w-72 h-72 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+    <div class="fixed -bottom-8 left-1/3 w-72 h-72 bg-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+
+    <div class="relative max-w-[1400px] mx-auto p-4 md:p-8">
+        
+<header class="flex flex-col gap-6 mb-8">
+    
+    <div class="flex items-center justify-between">
+        <div id="profileBtn" class="flex items-center gap-3 md:gap-5 cursor-pointer group">
+            <div class="relative">
+                <div class="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-full opacity-75 blur"></div>
+                <img id="headerImg" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Profile" class="relative w-12 h-12 md:w-16 md:h-16 rounded-full border-2 border-[#0f172a] object-cover">
+                <div class="absolute bottom-0 right-0 w-3 h-3 md:w-4 md:h-4 bg-green-500 rounded-full border-2 border-[#0f172a] z-10"></div>
+            </div>
+            <div>
+                <h1 class="text-xl md:text-3xl font-bold text-white tracking-tight flex items-center gap-2">
+                    Halo, <span id="headerName">Nabil</span>!
+                </h1>
+                <p id="headerStatus" class="text-xs md:text-sm text-slate-400 font-medium">StudentOS v1.0 • <span class="text-green-400">Online</span></p>
+            </div>
+        </div>
+
+        <button id="quickAddBtn" class="glass-card p-3 md:px-6 md:py-3 rounded-xl flex items-center gap-2 text-white font-semibold hover:bg-white/10 transition group border border-white/10">
+            <div class="bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg p-1">
+                <i data-lucide="plus" class="w-4 h-4 text-white"></i>
+            </div>
+            <span class="hidden md:inline">Quick Add</span>
+        </button>
+    </div>
+
+    <div class="w-full">
+        <div class="glass-card p-5 md:px-8 md:py-6 rounded-2xl md:rounded-[2rem] border border-white/10 bg-[#0f172a]/80 backdrop-blur-xl flex flex-col md:flex-row items-center gap-6 md:gap-10">
+            
+            <div class="flex flex-row md:flex-col items-center justify-between w-full md:w-auto md:border-r border-white/10 md:pr-10">
+                <div class="text-left md:text-center">
+                    <span id="greetingText" class="text-[10px] md:text-sm font-bold text-purple-400 uppercase tracking-wider block mb-1">LOADING...</span>
+                    <h2 class="text-2xl md:text-4xl font-black text-white whitespace-nowrap">Halo, <span id="greetingNameDynamic">Bro</span>!</h2>
+                </div>
+                <div class="flex items-center gap-1.5 text-slate-300 text-xs md:text-base font-medium bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
+                    <i data-lucide="map-pin" class="w-3 h-3 md:w-4 md:h-4 text-red-400"></i>
+                    <span id="locationText">...</span>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between w-full md:justify-start md:gap-10">
+                
+                <div class="flex items-center gap-3">
+                    <img id="weatherIcon" src="" class="w-12 h-12 md:w-20 md:h-20 drop-shadow-lg hidden filter saturate-150" alt="weather">
+                    <div class="flex flex-col leading-none">
+                        <span id="mainTemp" class="text-4xl md:text-6xl font-black text-white tracking-tighter">--°</span>
+                        <span id="weatherDesc" class="text-[10px] md:text-sm font-bold text-blue-300 capitalize mt-1">--</span>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 md:gap-8 border-l border-white/10 pl-4 md:pl-10">
+                    <div class="text-center">
+                        <i data-lucide="thermometer" class="w-4 h-4 md:w-6 md:h-6 text-orange-400 mx-auto mb-1"></i>
+                        <span id="feelsLike" class="block text-sm md:text-xl font-bold text-white">--°</span>
+                        <span class="text-[9px] text-slate-500 uppercase">Feel</span>
+                    </div>
+                    <div class="text-center">
+                        <i data-lucide="droplet" class="w-4 h-4 md:w-6 md:h-6 text-blue-400 mx-auto mb-1"></i>
+                        <span id="humidity" class="block text-sm md:text-xl font-bold text-white">--%</span>
+                        <span class="text-[9px] text-slate-500 uppercase">Hum</span>
+                    </div>
+                    <div class="text-center">
+                        <i data-lucide="wind" class="w-4 h-4 md:w-6 md:h-6 text-cyan-400 mx-auto mb-1"></i>
+                        <span id="windSpeed" class="block text-sm md:text-xl font-bold text-white">--</span>
+                        <span class="text-[9px] text-slate-500 uppercase">Wind</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+         
+
+
+            <div class="md:col-span-4 glass-card rounded-3xl p-6 relative overflow-hidden group min-h-[350px] flex flex-col justify-between">
+    <div class="absolute -right-10 -top-10 w-40 h-40 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+    
+    <button id="editFocusBtn" class="absolute top-4 right-4 p-2 bg-black/40 backdrop-blur-md rounded-lg text-white/70 hover:text-white hover:bg-black/60 transition opacity-0 group-hover:opacity-100 z-20 cursor-pointer border border-white/10">
+        <i data-lucide="edit-3" class="w-4 h-4"></i>
+    </button>
+
+    <div>
+        <div class="flex items-center gap-2 mb-6">
+            <span class="px-3 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-300 border border-blue-500/30">Focus Mode</span>
+            <i data-lucide="zap" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
+        </div>
+
+        <div class="text-center mb-6">
+            <h2 id="clock" class="text-6xl font-bold tracking-tighter text-white drop-shadow-lg mb-1">--:--</h2>
+            <p id="date" class="text-slate-400 text-sm font-medium tracking-wide">Memuat tanggal...</p>
+        </div>
+    </div>
+
+    <div class="bg-white/5 border border-white/5 rounded-2xl p-4 flex items-center gap-4 relative z-10">
+        <div class="bg-gradient-to-br from-blue-600 to-cyan-500 w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20 shrink-0">
+            <i data-lucide="book-open" class="w-6 h-6"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+            <p class="text-xs text-blue-300 font-semibold mb-0.5 uppercase tracking-wide">
+                NEXT: <span id="focusTimeDisplay">--.--</span>
+            </p>
+            <h3 id="focusTitleDisplay" class="text-white font-bold text-lg leading-tight truncate">Belum di-set</h3>
+            <p id="focusDescDisplay" class="text-xs text-slate-400 truncate">Klik edit untuk atur</p>
+        </div>
+    </div>
+
+    <div class="mt-4 flex justify-between items-center text-xs text-slate-400 border-t border-white/5 pt-4">
+        <span>Deadline Terdekat:</span>
+        <span id="countdownDisplay" class="text-red-400 font-bold flex items-center gap-1">
+            <i data-lucide="timer" class="w-3 h-3"></i> --
+        </span>
+    </div>
+</div>
+
+         <div class="md:col-span-4 glass-card rounded-3xl p-6 flex flex-col justify-between relative group h-[350px]">
+    
+    <button id="editProdBtn" class="absolute top-4 right-4 p-2 bg-black/40 backdrop-blur-md rounded-lg text-white/70 hover:text-white hover:bg-black/60 transition opacity-0 group-hover:opacity-100 z-20 cursor-pointer border border-white/10">
+        <i data-lucide="edit-3" class="w-4 h-4"></i>
+    </button>
+
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold text-lg text-white">Produktivitas</h3>
+        <div class="flex items-center gap-1 text-orange-400 bg-orange-500/10 px-2 py-1 rounded-lg border border-orange-500/20">
+            <i data-lucide="flame" class="w-4 h-4 fill-orange-400"></i>
+            <span id="streakDisplay" class="text-sm font-bold">0 Hari Streak!</span>
+        </div>
+    </div>
+
+    <div class="flex items-center gap-6 h-full">
+        <div class="w-32 h-32 relative shrink-0">
+            <canvas id="productivityChart"></canvas>
+            <div class="absolute inset-0 flex items-center justify-center flex-col pointer-events-none">
+                <span id="chartCenterText" class="text-2xl font-bold text-white">0%</span>
+            </div>
+        </div>
+        
+        <div class="flex-1 space-y-3 min-w-0">
+            <div>
+                <div class="flex justify-between text-xs mb-1">
+                    <span id="levelDisplay" class="text-purple-300 font-bold truncate pr-2">Level 1 Novice</span>
+                    <span id="xpTextDisplay" class="text-slate-400 shrink-0">0 / 100 XP</span>
+                </div>
+                <div class="w-full bg-slate-700/50 rounded-full h-2.5 overflow-hidden">
+                    <div id="xpBar" class="bg-gradient-to-r from-purple-600 to-pink-500 h-2.5 rounded-full progress-fill transition-all duration-1000" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-2 text-xs">
+                <div class="bg-white/5 rounded-lg p-2 text-center border border-white/5">
+                    <span class="block text-slate-400 mb-0.5">Jumlah Tasking</span>
+                    <span id="totalTasksDisplay" class="font-bold text-white text-lg">0</span>
+                </div>
+                <div class="bg-white/5 rounded-lg p-2 text-center border border-white/5">
+                    <span class="block text-slate-400 mb-0.5">Target Lomba</span>
+                    <span id="totalCompsDisplay" class="font-bold text-white text-lg">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+          <div class="md:col-span-4 glass-card rounded-3xl p-6 flex flex-col h-[350px]">
+    <div class="flex justify-between items-center mb-4 shrink-0">
+        <h3 class="font-bold text-lg text-white">Prioritas Hari Ini</h3>
+    </div>
+
+    <div id="taskList" class="space-y-3 overflow-y-auto pr-2 custom-scrollbar flex-1">
+        </div>
+</div>
+            
+    <div class="md:col-span-8 glass-card rounded-3xl p-6 flex flex-col h-[450px]">
+    <div class="flex justify-between items-center mb-4 shrink-0">
+        <div>
+            <h3 class="font-bold text-xl text-white">Academic Timeline</h3>
+            <p class="text-sm text-slate-400">Jadwal Kuliah & Sekolah</p>
+        </div>
+        <div class="flex gap-2">
+             <button id="addScheduleBtn" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition shadow-lg shadow-blue-900/50">
+                <i data-lucide="plus-circle" class="w-4 h-4"></i> Tambah Jadwal
+             </button>
+        </div>
+    </div>
+
+    <div id="scheduleContainer" class="flex gap-4 overflow-x-auto pb-2 snap-x flex-1 h-full custom-scrollbar">
+        </div>
+</div>
+
+<div id="scheduleModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md p-6 rounded-3xl relative animate-blob">
+            <h3 class="text-2xl font-bold text-white mb-6">Tambah Jadwal Mapel 📚</h3>
+            
+            <form id="addScheduleForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm text-slate-400 mb-1">Mata Pelajaran / Kuliah</label>
+                    <input type="text" id="schedSubject" required placeholder="Contoh: Fisika Kuantum" 
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition">
+                </div>
+
+                <div>
+                    <label class="block text-sm text-slate-400 mb-1">Hari</label>
+                    <select id="schedDay" class="w-full bg-[#1e293b] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition">
+                        <option value="1">Senin</option>
+                        <option value="2">Selasa</option>
+                        <option value="3">Rabu</option>
+                        <option value="4">Kamis</option>
+                        <option value="5">Jumat</option>
+                        <option value="6">Sabtu</option>
+                        <option value="0">Minggu</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-1">Jam Mulai</label>
+                        <input type="time" id="schedTime" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 [color-scheme:dark]">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-1">Ruangan</label>
+                        <input type="text" id="schedRoom" placeholder="R. 101" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                </div>
+
+                <div class="flex gap-3 mt-6 pt-4 border-t border-white/10">
+                    <button type="button" id="closeSchedModal" class="flex-1 py-3 rounded-xl bg-white/5 text-slate-300 hover:bg-white/10 font-semibold transition">Batal</button>
+                    <button type="submit" class="flex-1 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold transition shadow-lg shadow-blue-500/30">Simpan Jadwal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+          <div class="md:col-span-4 glass-card rounded-3xl p-6 relative flex flex-col h-[450px]">
+    <div class="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 blur-3xl rounded-full pointer-events-none"></div>
+
+    <div class="flex justify-between items-center mb-4 shrink-0 relative z-10">
+        <h3 class="font-bold text-lg text-white">Target Kompetisi 🏆</h3>
+        <button id="addCompBtn" class="p-2 rounded-lg bg-white/5 hover:bg-orange-600 hover:text-white transition flex items-center gap-2 text-xs font-bold border border-white/10 group">
+            <i data-lucide="plus" class="w-4 h-4 group-hover:rotate-90 transition"></i> Baru
+        </button>
+    </div>
+
+    <div id="compContainer" class="flex-1 overflow-y-auto pr-2 space-y-4 custom-scrollbar">
+        </div>
+</div>
+
+  <div class="md:col-span-6 glass-card rounded-3xl p-6 flex flex-col h-[300px]">
+    <div class="flex justify-between items-center mb-4 shrink-0">
+        <h3 class="font-bold text-lg text-white flex items-center gap-2">
+            <i data-lucide="users" class="w-5 h-5 text-purple-400"></i> Organization Hub
+        </h3>
+        <button id="addOrgBtn" class="p-2 rounded-lg bg-white/5 hover:bg-purple-600 hover:text-white transition flex items-center gap-2 text-xs font-bold border border-white/10 group">
+            <i data-lucide="plus" class="w-4 h-4 group-hover:rotate-90 transition"></i> Join Baru
+        </button>
+    </div>
+
+    <div id="orgContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4 overflow-y-auto pr-2 pb-2 custom-scrollbar flex-1 content-start">
+        </div>
+</div>
+         <div class="md:col-span-6 glass-card rounded-3xl p-6 flex flex-col justify-center relative overflow-hidden group min-h-[220px]">
+    <img src="https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&w=800&q=80" class="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-overlay transition duration-700 group-hover:scale-110" alt="Nature">
+    
+    <button id="editNoteBtn" class="absolute top-4 right-4 p-2 bg-black/40 backdrop-blur-md rounded-lg text-white/70 hover:text-white hover:bg-black/60 transition opacity-0 group-hover:opacity-100 z-20 cursor-pointer border border-white/10">
+        <i data-lucide="edit-3" class="w-4 h-4"></i>
+    </button>
+
+    <div class="relative z-10 flex flex-col items-start gap-4">
+        <div class="w-full">
+            <h3 class="font-bold text-xl text-white mb-2 flex items-center gap-2">
+                Note to Self <span class="text-xl">🌿</span>
+            </h3>
+            <div class="min-h-[60px]">
+                <p id="noteText" class="text-sm text-slate-200 italic leading-relaxed font-medium">
+                    "Memuat catatan..."
+                </p>
+            </div>
+        </div>
+        
+        <div class="flex gap-3 w-full">
+            <div class="bg-emerald-500/20 border border-emerald-500/30 p-3 rounded-xl text-center flex-1 backdrop-blur-sm group/water hover:bg-emerald-500/30 transition">
+                <i data-lucide="droplet" class="w-5 h-5 text-emerald-400 mx-auto mb-1 group-hover/water:scale-110 transition"></i>
+                <span id="waterText" class="text-sm text-emerald-100 font-bold block">0L</span>
+                <span class="text-[10px] text-emerald-400/70 uppercase tracking-wider">Water</span>
+            </div>
+            <div class="bg-indigo-500/20 border border-indigo-500/30 p-3 rounded-xl text-center flex-1 backdrop-blur-sm group/sleep hover:bg-indigo-500/30 transition">
+                <i data-lucide="moon" class="w-5 h-5 text-indigo-400 mx-auto mb-1 group-hover/sleep:scale-110 transition"></i>
+                <span id="sleepText" class="text-sm text-indigo-100 font-bold block">0 Jam</span>
+                <span class="text-[10px] text-indigo-400/70 uppercase tracking-wider">Sleep</span>
+            </div>
+        </div>
+    </div>
+</div>
+   <div class="md:col-span-6 glass-card rounded-3xl p-6 flex flex-col h-[400px]">
+        <div class="flex justify-between items-center mb-4 shrink-0">
+            <div>
+                <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                    <i data-lucide="briefcase" class="w-5 h-5 text-cyan-400"></i> Internship Hub
+                </h3>
+                <p class="text-xs text-slate-400">Riwayat & Rencana Magang</p>
+            </div>
+            <button id="addInternBtn" class="p-2 rounded-lg bg-white/5 hover:bg-cyan-600 hover:text-white transition flex items-center gap-2 text-xs font-bold border border-white/10 group">
+                <i data-lucide="plus" class="w-4 h-4 group-hover:rotate-90 transition"></i> Tambah
+            </button>
+        </div>
+
+        <div id="internContainer" class="flex flex-col gap-3 overflow-y-auto pr-2 custom-scrollbar flex-1">
+            </div>
+    </div>
+
+    <div class="md:col-span-6 glass-card rounded-3xl p-6 flex flex-col h-[400px]">
+        <div class="flex justify-between items-center mb-4 shrink-0">
+            <div>
+                <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                    <i data-lucide="building-2" class="w-5 h-5 text-emerald-400"></i> Work Experience
+                </h3>
+                <p class="text-xs text-slate-400">Riwayat Pekerjaan & Part-time</p>
+            </div>
+            <button id="addWorkBtn" class="p-2 rounded-lg bg-white/5 hover:bg-emerald-600 hover:text-white transition flex items-center gap-2 text-xs font-bold border border-white/10 group">
+                <i data-lucide="plus" class="w-4 h-4 group-hover:rotate-90 transition"></i> Tambah
+            </button>
+        </div>
+
+        <div id="workContainer" class="flex flex-col gap-3 overflow-y-auto pr-2 custom-scrollbar flex-1">
+            </div>
+    </div>
+<div class="md:col-span-6 glass-card rounded-3xl p-6 flex flex-col h-[500px]">
+        <div class="flex justify-between items-center mb-4 shrink-0">
+            <div>
+                <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                    <i data-lucide="wallet" class="w-5 h-5 text-green-400"></i> Finance Flow
+                </h3>
+                <p class="text-xs text-slate-400">Pemasukan, Pengeluaran & Utang</p>
+            </div>
+            <button id="addFinanceBtn" class="p-2 rounded-lg bg-white/5 hover:bg-green-600 hover:text-white transition flex items-center gap-2 text-xs font-bold border border-white/10 group">
+                <i data-lucide="plus" class="w-4 h-4 group-hover:rotate-90 transition"></i> Transaksi
+            </button>
+        </div>
+
+        <div class="h-48 w-full relative mb-4 shrink-0">
+            <canvas id="financeChart"></canvas>
+        </div>
+
+        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Riwayat Transaksi</p>
+        <div id="financeContainer" class="flex flex-col gap-2 overflow-y-auto pr-2 custom-scrollbar flex-1">
+            </div>
+    </div>
+
+    <div class="md:col-span-6 glass-card rounded-3xl p-6 flex flex-col h-[500px]">
+        <div class="flex justify-between items-center mb-4 shrink-0">
+            <div>
+                <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                    <i data-lucide="trending-up" class="w-5 h-5 text-yellow-400"></i> Investment Portfolio
+                </h3>
+                <p class="text-xs text-slate-400">Alokasi & Diversifikasi Aset</p>
+            </div>
+            <button id="addInvestBtn" class="p-2 rounded-lg bg-white/5 hover:bg-yellow-600 hover:text-white transition flex items-center gap-2 text-xs font-bold border border-white/10 group">
+                <i data-lucide="plus" class="w-4 h-4 group-hover:rotate-90 transition"></i> Aset Baru
+            </button>
+        </div>
+
+        <div class="h-48 w-full relative mb-4 shrink-0 flex justify-center">
+            <canvas id="investChart"></canvas>
+        </div>
+
+        <div class="flex justify-between items-end mb-2">
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Daftar Aset</p>
+            <p class="text-xs font-bold text-yellow-400" id="totalInvestDisplay">Total: Rp 0</p>
+        </div>
+        <div id="investContainer" class="flex flex-col gap-2 overflow-y-auto pr-2 custom-scrollbar flex-1">
+            </div>
+    </div>
+<div class="md:col-span-6 glass-card rounded-3xl p-6 flex flex-col h-[500px]">
+        <div class="flex justify-between items-center mb-4 shrink-0">
+            <div>
+                <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                    <i data-lucide="dumbbell" class="w-5 h-5 text-orange-500"></i> Workout Log
+                </h3>
+                <p class="text-xs text-slate-400">Durasi & Kalori Terbakar</p>
+            </div>
+            <button id="addWorkoutBtn" class="p-2 rounded-lg bg-white/5 hover:bg-orange-600 hover:text-white transition flex items-center gap-2 text-xs font-bold border border-white/10 group">
+                <i data-lucide="plus" class="w-4 h-4 group-hover:rotate-90 transition"></i> Log Latihan
+            </button>
+        </div>
+
+        <div class="h-48 w-full relative mb-4 shrink-0">
+            <canvas id="workoutChart"></canvas>
+        </div>
+
+        <div class="flex justify-between items-end mb-2">
+            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Riwayat Latihan</span>
+            <span id="totalCaloriesDisplay" class="text-xs font-bold text-orange-400">Total Kalori: 0 kcal</span>
+        </div>
+        <div id="workoutContainer" class="flex flex-col gap-2 overflow-y-auto pr-2 custom-scrollbar flex-1">
+            </div>
+    </div>
+
+    <div class="md:col-span-6 glass-card rounded-3xl p-6 flex flex-col h-[500px]">
+        <div class="flex justify-between items-center mb-4 shrink-0">
+            <div>
+                <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                    <i data-lucide="utensils" class="w-5 h-5 text-lime-400"></i> Meal Tracker
+                </h3>
+                <p class="text-xs text-slate-400">Jurnal Nutrisi & Kalori</p>
+            </div>
+            <button id="addMealBtn" class="p-2 rounded-lg bg-white/5 hover:bg-lime-600 hover:text-white transition flex items-center gap-2 text-xs font-bold border border-white/10 group">
+                <i data-lucide="plus" class="w-4 h-4 group-hover:rotate-90 transition"></i> Catat Makan
+            </button>
+        </div>
+
+        <div class="h-48 w-full relative mb-4 shrink-0 flex justify-center">
+            <canvas id="mealChart"></canvas>
+        </div>
+
+        <div class="flex justify-between items-end mb-2">
+            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Jurnal Makanan</span>
+            <span id="totalMealCalDisplay" class="text-xs font-bold text-lime-400">Intake: 0 kcal</span>
+        </div>
+        <div id="mealContainer" class="flex flex-col gap-2 overflow-y-auto pr-2 custom-scrollbar flex-1">
+            </div>
+    </div>
+    <div class="md:col-span-6 glass-card rounded-3xl p-6 flex flex-col h-[500px]">
+        <div class="flex justify-between items-center mb-4 shrink-0">
+            <div>
+                <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                    <i data-lucide="moon" class="w-5 h-5 text-indigo-400"></i> Sleep Monitor
+                </h3>
+                <p class="text-xs text-slate-400">Kualitas & Durasi Tidur</p>
+            </div>
+            <button id="addSleepBtn" class="p-2 rounded-lg bg-white/5 hover:bg-indigo-600 hover:text-white transition flex items-center gap-2 text-xs font-bold border border-white/10 group">
+                <i data-lucide="plus" class="w-4 h-4 group-hover:rotate-90 transition"></i> Catat Tidur
+            </button>
+        </div>
+
+        <div class="h-48 w-full relative mb-4 shrink-0">
+            <canvas id="sleepChart"></canvas>
+        </div>
+
+        <div class="flex justify-between items-end mb-2">
+            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Riwayat Tidur</span>
+            <span id="avgSleepDisplay" class="text-xs font-bold text-indigo-400">Rata-rata: 0 Jam</span>
+        </div>
+        <div id="sleepContainer" class="flex flex-col gap-2 overflow-y-auto pr-2 custom-scrollbar flex-1">
+            </div>
+    </div>
+
+    <div class="md:col-span-6 glass-card rounded-3xl p-6 flex flex-col h-[500px]">
+        <div class="flex justify-between items-center mb-4 shrink-0">
+            <div>
+                <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                    <i data-lucide="scale" class="w-5 h-5 text-rose-400"></i> Body Tracker
+                </h3>
+                <p class="text-xs text-slate-400">Progres Fisik & Berat Badan</p>
+            </div>
+            <button id="addBodyBtn" class="p-2 rounded-lg bg-white/5 hover:bg-rose-600 hover:text-white transition flex items-center gap-2 text-xs font-bold border border-white/10 group">
+                <i data-lucide="plus" class="w-4 h-4 group-hover:rotate-90 transition"></i> Update Ukuran
+            </button>
+        </div>
+
+        <div class="h-48 w-full relative mb-4 shrink-0">
+            <canvas id="bodyChart"></canvas>
+        </div>
+
+        <div class="flex justify-between items-end mb-2">
+            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Catatan Progres</span>
+            <span id="latestWeightDisplay" class="text-xs font-bold text-rose-400">Saat ini: - kg</span>
+        </div>
+        <div id="bodyContainer" class="flex flex-col gap-2 overflow-y-auto pr-2 custom-scrollbar flex-1">
+            </div>
+    </div>
+
+
+        </div> 
+    </div>
+    <div id="addModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"></div>
+        
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="glass-card w-full max-w-md p-6 rounded-3xl relative animate-blob">
+                <h3 class="text-2xl font-bold text-white mb-6">Tambah Tugas Baru ✨</h3>
+                
+               <form id="addTaskForm" class="space-y-4">
+    <div>
+        <label class="block text-sm text-slate-400 mb-2">Nama Tugas / Kegiatan</label>
+        <input type="text" id="taskInput" required placeholder="Contoh: Bikin PPT Sejarah..." 
+            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 focus:bg-white/10 transition">
+    </div>
+    <div>
+        <label class="block text-sm text-slate-400 mb-2">Jam Tenggat / Pelaksanaan (Opsional)</label>
+        <div class="relative">
+            <input type="time" id="taskTime" 
+                class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition [color-scheme:dark]">
+        </div>
+    </div>
+
+    <div>
+        <label class="block text-sm text-slate-400 mb-2">Kategori</label>
+        <div class="flex flex-wrap gap-2">
+            <label class="cursor-pointer">
+                <input type="radio" name="category" value="Akademik" class="peer hidden" checked>
+                <div class="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-slate-400 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-500 transition hover:bg-white/10">
+                    Akademik
+                </div>
+            </label>
+            <label class="cursor-pointer">
+                <input type="radio" name="category" value="OSIS" class="peer hidden">
+                <div class="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-slate-400 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-500 transition hover:bg-white/10">
+                    OSIS
+                </div>
+            </label>
+            <label class="cursor-pointer">
+                <input type="radio" name="category" value="Lomba" class="peer hidden">
+                <div class="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-slate-400 peer-checked:bg-orange-600 peer-checked:text-white peer-checked:border-orange-500 transition hover:bg-white/10">
+                    Lomba
+                </div>
+            </label>
+            <label class="cursor-pointer">
+                <input type="radio" name="category" value="Magang" class="peer hidden">
+                <div class="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-slate-400 peer-checked:bg-slate-600 peer-checked:text-white peer-checked:border-slate-500 transition hover:bg-white/10">
+                    Magang
+                </div>
+            </label>
+            <label class="cursor-pointer">
+                <input type="radio" name="category" value="Kuliah" class="peer hidden">
+                <div class="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-slate-400 peer-checked:bg-cyan-600 peer-checked:text-white peer-checked:border-cyan-500 transition hover:bg-white/10">
+                    Kuliah
+                </div>
+            </label>
+            <label class="cursor-pointer">
+                <input type="radio" name="category" value="Belajar Mandiri" class="peer hidden">
+                <div class="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-slate-400 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-500 transition hover:bg-white/10">
+                    Belajar Mandiri
+                </div>
+            </label>
+            <label class="cursor-pointer">
+                <input type="radio" name="category" value="Main Game" class="peer hidden">
+                <div class="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-slate-400 peer-checked:bg-pink-600 peer-checked:text-white peer-checked:border-pink-500 transition hover:bg-white/10">
+                    Main Game
+                </div>
+            </label>
+        </div>
+    </div>
+
+    <div class="flex gap-3 mt-6 pt-4 border-t border-white/10">
+        <button type="button" id="closeModalBtn" class="flex-1 py-3 rounded-xl bg-white/5 text-slate-300 hover:bg-white/10 font-semibold transition">
+            Batal
+        </button>
+        <button type="submit" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold hover:shadow-lg hover:shadow-purple-500/30 transition transform hover:scale-[1.02]">
+            Simpan Tugas
+        </button>
+    </div>
+</form>
+            </div>
+        </div>
+    </div>
+    <div id="compModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-md transition-opacity"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md p-6 rounded-3xl relative animate-blob border border-orange-500/20 shadow-2xl shadow-orange-900/20">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-white">Target Baru 🎯</h3>
+                <button id="closeCompModal" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            
+            <form id="addCompForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Nama Kompetisi</label>
+                    <input type="text" id="compName" required placeholder="Contoh: Gemastik 2026" 
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Tingkat / Kategori</label>
+                    <input type="text" id="compLevel" required placeholder="Nasional / UI / UX Design" 
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Fase / Tahapan</label>
+                    <textarea id="compPhases" required rows="4" placeholder="Masukkan tahapan dipisah koma ( , )&#10;Contoh:&#10;Registrasi, Penyisihan, Semifinal, Final Pitching" 
+                        class="w-full bg-[#0f172a] border border-white/10 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-orange-500 transition leading-relaxed"></textarea>
+                    <p class="text-[10px] text-orange-400/80 mt-2">
+                        *Pisahkan setiap tahap dengan tanda koma ( , )
+                    </p>
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-orange-600 to-red-600 text-white font-bold transition hover:shadow-lg hover:shadow-orange-600/40 hover:scale-[1.02]">
+                        Simpan Target 🚀
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div id="orgModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-md transition-opacity"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md p-6 rounded-3xl relative animate-blob border border-purple-500/20 shadow-2xl shadow-purple-900/20">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-white">Join Organisasi 🤝</h3>
+                <button id="closeOrgModal" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            
+            <form id="addOrgForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Nama Organisasi / Klub</label>
+                    <input type="text" id="orgName" required placeholder="Contoh: OSIS / Klub Robotik" 
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Role / Jabatan</label>
+                    <input type="text" id="orgRole" required placeholder="Contoh: Ketua Divisi Humas" 
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Jadwal Rutin</label>
+                        <input type="text" id="orgSchedule" placeholder="Sabtu, 15:00" 
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Nama Lokasi</label>
+                        <input type="text" id="orgLocation" placeholder="R. Osis / Lab" 
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Link Google Maps (Opsional)</label>
+                    <div class="relative">
+                        <i data-lucide="map" class="absolute left-4 top-3.5 w-4 h-4 text-slate-500"></i>
+                        <input type="url" id="orgMapLink" placeholder="https://maps.app.goo.gl/..." 
+                            class="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-blue-300 placeholder-slate-600 focus:outline-none focus:border-purple-500 transition text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Tugas / Reminder Aktif</label>
+                    <input type="text" id="orgTask" placeholder="Contoh: Buat Caption Instagram..." 
+                        class="w-full bg-purple-500/10 border border-purple-500/30 rounded-xl px-4 py-3 text-purple-200 placeholder-purple-400/50 focus:outline-none focus:border-purple-500 transition">
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold transition hover:shadow-lg hover:shadow-purple-600/40 hover:scale-[1.02]">
+                        Simpan Data
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div id="noteModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-md transition-opacity"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md p-6 rounded-3xl relative animate-blob border border-emerald-500/20 shadow-2xl shadow-emerald-900/20">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-white">Edit Catatan & Target 🌿</h3>
+                <button id="closeNoteModal" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            
+            <form id="editNoteForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Pesan Untuk Diri Sendiri</label>
+                    <textarea id="inputNote" rows="4" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition placeholder-slate-600" placeholder="Tulis kata-kata motivasimu..."></textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Target Air</label>
+                        <input type="text" id="inputWater" placeholder="Contoh: 2.5L" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Durasi Tidur</label>
+                        <input type="text" id="inputSleep" placeholder="Contoh: 8 Jam" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition">
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold transition hover:shadow-lg hover:shadow-emerald-600/40 hover:scale-[1.02]">
+                        Simpan Perubahan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div id="focusModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-md transition-opacity"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md p-6 rounded-3xl relative animate-blob border border-blue-500/20 shadow-2xl shadow-blue-900/20">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-white">Atur Fokus & Deadline 🎯</h3>
+                <button id="closeFocusModal" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            
+            <form id="editFocusForm" class="space-y-4">
+                <div class="space-y-3 pb-4 border-b border-white/10">
+                    <p class="text-xs font-bold text-blue-400 uppercase tracking-wider">Kegiatan Berikutnya</p>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Nama Kegiatan / Mapel</label>
+                        <input type="text" id="inputFocusTitle" placeholder="Contoh: Matematika Lanjut" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Jam Mulai</label>
+                            <input type="text" id="inputFocusTime" placeholder="13.00" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Ruangan / Detail</label>
+                            <input type="text" id="inputFocusDesc" placeholder="R. 302" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <p class="text-xs font-bold text-red-400 uppercase tracking-wider">Deadline Timer</p>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Pilih Tanggal & Jam Deadline</label>
+                        <input type="datetime-local" id="inputDeadline" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500 transition [color-scheme:dark]">
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold transition hover:shadow-lg hover:shadow-blue-600/40 hover:scale-[1.02]">
+                        Update Fokus
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div id="prodModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-md transition-opacity"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md p-6 rounded-3xl relative animate-blob border border-purple-500/20 shadow-2xl shadow-purple-900/20">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-white">Level & Stats 🚀</h3>
+                <button id="closeProdModal" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            
+            <form id="editProdForm" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Streak (Hari)</label>
+                        <input type="number" id="inputStreak" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Nama Level</label>
+                        <input type="text" id="inputLevelName" placeholder="Scholar" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Target XP (Goal)</label>
+                    <input type="number" id="inputTargetXP" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition">
+                    <p class="text-[10px] text-slate-500 mt-1">*XP akan bertambah otomatis saat tugas/lomba selesai.</p>
+                </div>
+
+                <div class="pt-2 border-t border-white/10 mt-2">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Distribusi Grafik (%)</p>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="text-xs text-blue-300 flex justify-between"><span>Belajar (Academic)</span> <span id="val1">0%</span></label>
+                            <input type="range" id="inputChart1" min="0" max="100" class="w-full h-1 bg-blue-500/30 rounded-lg appearance-none cursor-pointer accent-blue-500">
+                        </div>
+                        <div>
+                            <label class="text-xs text-purple-300 flex justify-between"><span>Organisasi</span> <span id="val2">0%</span></label>
+                            <input type="range" id="inputChart2" min="0" max="100" class="w-full h-1 bg-purple-500/30 rounded-lg appearance-none cursor-pointer accent-purple-500">
+                        </div>
+                        <div>
+                            <label class="text-xs text-green-300 flex justify-between"><span>Istirahat</span> <span id="val3">0%</span></label>
+                            <input type="range" id="inputChart3" min="0" max="100" class="w-full h-1 bg-green-500/30 rounded-lg appearance-none cursor-pointer accent-green-500">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold transition hover:shadow-lg hover:shadow-purple-600/40 hover:scale-[1.02]">
+                        Simpan Stats
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div id="profileModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-md transition-opacity"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md p-6 rounded-3xl relative animate-blob border border-blue-500/20 shadow-2xl shadow-blue-900/20">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-white">Edit Profil 👤</h3>
+                <button id="closeProfileModal" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            
+            <form id="editProfileForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Nama Panggilan</label>
+                    <input type="text" id="inputProfileName" required placeholder="Contoh: Nabil" 
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Link Foto Profil (URL)</label>
+                    <input type="url" id="inputProfileImg" placeholder="https://..." 
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition text-xs">
+                    <p class="text-[10px] text-slate-500 mt-1">*Kosongkan untuk pakai foto default.</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Status / Pendidikan</label>
+                    <input type="text" id="inputProfileStatus" placeholder="StudentOS v1.0 • Online" 
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition">
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold transition hover:shadow-lg hover:shadow-blue-600/40 hover:scale-[1.02]">
+                        Simpan Profil
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div id="internModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-md transition-opacity"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md p-6 rounded-3xl relative animate-blob border border-cyan-500/20 shadow-2xl shadow-cyan-900/20">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-white">Data Magang 💼</h3>
+                <button id="closeInternModal" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            
+            <form id="addInternForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Nama Perusahaan / Instansi</label>
+                    <input type="text" id="internCompany" required placeholder="Contoh: Tokopedia / Dinas Pendidikan" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Posisi / Role</label>
+                    <input type="text" id="internRole" required placeholder="Contoh: UI/UX Designer Intern" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Periode</label>
+                        <input type="text" id="internPeriod" placeholder="Jan 2026 - Mar 2026" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Tipe Lokasi</label>
+                        <select id="internType" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition [&>option]:text-black">
+                            <option value="On-site">On-site (WFO)</option>
+                            <option value="Remote">Remote (WFH)</option>
+                            <option value="Hybrid">Hybrid</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold transition hover:shadow-lg hover:shadow-cyan-600/40 hover:scale-[1.02]">Simpan Magang</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="workModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-md transition-opacity"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md p-6 rounded-3xl relative animate-blob border border-emerald-500/20 shadow-2xl shadow-emerald-900/20">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-white">Data Pekerjaan 🏢</h3>
+                <button id="closeWorkModal" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            
+            <form id="addWorkForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Nama Perusahaan / Tempat</label>
+                    <input type="text" id="workCompany" required placeholder="Contoh: Starbucks / Freelance" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Posisi / Jabatan</label>
+                    <input type="text" id="workRole" required placeholder="Contoh: Barista / Fullstack Dev" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Periode</label>
+                        <input type="text" id="workPeriod" placeholder="2024 - Sekarang" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Tipe Lokasi</label>
+                        <select id="workType" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition [&>option]:text-black">
+                            <option value="Full-time">Full-time</option>
+                            <option value="Part-time">Part-time</option>
+                            <option value="Freelance">Freelance</option>
+                            <option value="Contract">Contract</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 text-white font-bold transition hover:shadow-lg hover:shadow-emerald-600/40 hover:scale-[1.02]">Simpan Pekerjaan</button>
+            </form>
+        </div>
+    </div>
+</div>
+<div id="financeModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-md transition-opacity"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md p-6 rounded-3xl relative animate-blob border border-green-500/20 shadow-2xl shadow-green-900/20">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-white">Catat Transaksi 💸</h3>
+                <button id="closeFinanceModal" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <form id="addFinanceForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Nama Transaksi</label>
+                    <input type="text" id="finTitle" required placeholder="Contoh: Gaji Magang / Bayar Kost" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-green-500 transition">
+                </div>
+                <div>
+    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Nominal (Rp)</label>
+    <input type="text" inputmode="numeric" id="finAmount" required placeholder="500.000" 
+        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-green-500 transition">
+</div>
+              
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Kategori</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <label class="cursor-pointer"><input type="radio" name="finType" value="Pemasukan" class="peer hidden" checked>
+                            <div class="p-3 rounded-xl bg-white/5 text-center text-xs text-slate-400 border border-white/10 peer-checked:bg-green-600 peer-checked:text-white transition hover:bg-white/10">Pemasukan 💰</div>
+                        </label>
+                        <label class="cursor-pointer"><input type="radio" name="finType" value="Pengeluaran" class="peer hidden">
+                            <div class="p-3 rounded-xl bg-white/5 text-center text-xs text-slate-400 border border-white/10 peer-checked:bg-red-600 peer-checked:text-white transition hover:bg-white/10">Pengeluaran 💸</div>
+                        </label>
+                        <label class="cursor-pointer"><input type="radio" name="finType" value="Utang" class="peer hidden">
+                            <div class="p-3 rounded-xl bg-white/5 text-center text-xs text-slate-400 border border-white/10 peer-checked:bg-orange-600 peer-checked:text-white transition hover:bg-white/10">Utang ⚠️</div>
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold transition hover:shadow-lg hover:shadow-green-600/40 hover:scale-[1.02]">Simpan Data</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="investModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-md transition-opacity"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md p-6 rounded-3xl relative animate-blob border border-yellow-500/20 shadow-2xl shadow-yellow-900/20">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-white">Tambah Aset 📈</h3>
+                <button id="closeInvestModal" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <form id="addInvestForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Nama Aset</label>
+                    <input type="text" id="invName" required placeholder="Contoh: BBCA, Bitcoin, Emas Antam" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-yellow-500 transition">
+                </div>
+              <div>
+    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Nilai Aset Sekarang (Rp)</label>
+    <input type="text" inputmode="numeric" id="invAmount" required placeholder="1.000.000" 
+        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-yellow-500 transition">
+</div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Jenis Instrumen</label>
+                    <select id="invType" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-yellow-500 transition [&>option]:text-black">
+                        <option value="Saham">Saham</option>
+                        <option value="Reksadana">Reksadana</option>
+                        <option value="Crypto">Crypto</option>
+                        <option value="Emas">Emas / Logam Mulia</option>
+                        <option value="Cash/Deposito">Cash / Deposito</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-yellow-600 to-orange-600 text-white font-bold transition hover:shadow-lg hover:shadow-yellow-600/40 hover:scale-[1.02]">Simpan Portofolio</button>
+            </form>
+        </div>
+    </div>
+</div>
+<div id="workoutModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-md transition-opacity"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md p-6 rounded-3xl relative animate-blob border border-orange-500/20 shadow-2xl shadow-orange-900/20">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-white">Log Latihan 💪</h3>
+                <button id="closeWorkoutModal" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <form id="addWorkoutForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Jenis Latihan</label>
+                    <input type="text" id="woName" required placeholder="Contoh: Lari Pagi, Push Up, Renang" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Durasi (Menit)</label>
+                        <input type="number" id="woDuration" required placeholder="30" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Kalori Terbakar</label>
+                        <input type="number" id="woCalories" required placeholder="150" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Kategori</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="cursor-pointer"><input type="radio" name="woType" value="Kardio" class="peer hidden" checked>
+                            <div class="p-3 rounded-xl bg-white/5 text-center text-xs text-slate-400 border border-white/10 peer-checked:bg-orange-600 peer-checked:text-white transition hover:bg-white/10">Kardio 🏃‍♂️</div>
+                        </label>
+                        <label class="cursor-pointer"><input type="radio" name="woType" value="Angkat Beban" class="peer hidden">
+                            <div class="p-3 rounded-xl bg-white/5 text-center text-xs text-slate-400 border border-white/10 peer-checked:bg-red-600 peer-checked:text-white transition hover:bg-white/10">Angkat Beban 🏋️‍♂️</div>
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-orange-600 to-red-600 text-white font-bold transition hover:shadow-lg hover:shadow-orange-600/40 hover:scale-[1.02]">Simpan Latihan</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="mealModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-md transition-opacity"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md p-6 rounded-3xl relative animate-blob border border-lime-500/20 shadow-2xl shadow-lime-900/20">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-white">Catat Makanan 🥗</h3>
+                <button id="closeMealModal" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <form id="addMealForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Nama Makanan</label>
+                    <input type="text" id="mealName" required placeholder="Contoh: Nasi Goreng, Salad Buah" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-lime-500 transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Jumlah Kalori (kcal)</label>
+                    <input type="number" id="mealCalories" required placeholder="500" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-lime-500 transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Jenis Nutrisi Dominan</label>
+                    <select id="mealType" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-lime-500 transition [&>option]:text-black">
+                        <option value="Karbohidrat">Karbohidrat (Nasi, Roti)</option>
+                        <option value="Protein">Protein (Ayam, Telur, Daging)</option>
+                        <option value="Sayur & Serat">Sayur & Serat</option>
+                        <option value="Lainnya">Lainnya / Minuman</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-lime-600 to-green-600 text-white font-bold transition hover:shadow-lg hover:shadow-lime-600/40 hover:scale-[1.02]">Simpan Makanan</button>
+            </form>
+        </div>
+    </div>
+</div>
+<div id="sleepModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-md transition-opacity"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md p-6 rounded-3xl relative animate-blob border border-indigo-500/20 shadow-2xl shadow-indigo-900/20">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-white">Log Tidur 😴</h3>
+                <button id="closeSleepModal" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <form id="addSleepForm" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Waktu Tidur</label>
+                        <input type="datetime-local" id="sleepStart" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition [color-scheme:dark]">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Waktu Bangun</label>
+                        <input type="datetime-local" id="sleepEnd" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition [color-scheme:dark]">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Kualitas Tidur</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <label class="cursor-pointer"><input type="radio" name="sleepQual" value="Buruk" class="peer hidden">
+                            <div class="p-3 rounded-xl bg-white/5 text-center text-xs text-slate-400 border border-white/10 peer-checked:bg-red-600 peer-checked:text-white transition hover:bg-white/10">Buruk 😫</div>
+                        </label>
+                        <label class="cursor-pointer"><input type="radio" name="sleepQual" value="Sedang" class="peer hidden" checked>
+                            <div class="p-3 rounded-xl bg-white/5 text-center text-xs text-slate-400 border border-white/10 peer-checked:bg-yellow-600 peer-checked:text-white transition hover:bg-white/10">Sedang 😐</div>
+                        </label>
+                        <label class="cursor-pointer"><input type="radio" name="sleepQual" value="Nyenyak" class="peer hidden">
+                            <div class="p-3 rounded-xl bg-white/5 text-center text-xs text-slate-400 border border-white/10 peer-checked:bg-indigo-600 peer-checked:text-white transition hover:bg-white/10">Nyenyak 😴</div>
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold transition hover:shadow-lg hover:shadow-indigo-600/40 hover:scale-[1.02]">Simpan Data</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="bodyModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-md transition-opacity"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md p-6 rounded-3xl relative animate-blob border border-rose-500/20 shadow-2xl shadow-rose-900/20">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-white">Ukuran Tubuh ⚖️</h3>
+                <button id="closeBodyModal" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <form id="addBodyForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Tanggal Pengukuran</label>
+                    <input type="date" id="bodyDate" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-rose-500 transition [color-scheme:dark]">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Berat Badan (kg)</label>
+                        <input type="text" inputmode="decimal" id="bodyWeight" required placeholder="60.5" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-rose-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Lingkar Pinggang (cm)</label>
+                        <input type="number" id="bodyWaist" placeholder="80" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-rose-500 transition">
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 text-white font-bold transition hover:shadow-lg hover:shadow-rose-600/40 hover:scale-[1.02]">Simpan Progres</button>
+            </form>
+        </div>
+    </div>
+</div>
+   <script>
+    
+    // ==========================================
+    // LOGIKA INTERNSHIP & WORK MANAGEMENT
+    // ==========================================
+// ==========================================
+    // LOGIKA KEUANGAN & INVESTASI (WITH CHARTS)
+    // ==========================================
+// ==========================================
+    // LOGIKA KEUANGAN & INVESTASI (REVISI: TIMESTAMP & AUTO FORMAT)
+    // ==========================================
+// ==========================================
+    // LOGIKA KEUANGAN & INVESTASI (REVISI: LABA BERSIH & LAYOUT WAKTU)
+    // ==========================================
+
+    // --- HELPER FUNCTIONS ---
+    const formatRupiah = (number) => {
+        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
+    };
+
+    const formatDateTime = (dateString) => {
+        if(!dateString) return "-";
+        const date = new Date(dateString);
+        // Format pendek: 14 Feb 2026 • 11:09
+        return date.toLocaleDateString('id-ID', { 
+            day: 'numeric', 
+            month: 'short', 
+            year: 'numeric',
+            hour: '2-digit', 
+            minute: '2-digit'
+        }).replace(/\./g, ':');
+    };
+
+    function setupCurrencyInput(inputId) {
+        const input = document.getElementById(inputId);
+        input.addEventListener('keyup', function(e) {
+            let val = this.value.replace(/[^0-9]/g, '');
+            if (val !== "") {
+                this.value = new Intl.NumberFormat('id-ID').format(val);
+            } else {
+                this.value = "";
+            }
+        });
+    }
+
+    setupCurrencyInput('finAmount');
+    setupCurrencyInput('invAmount');
+
+
+    // --- 1. FINANCE MANAGER ---
+    let finances = JSON.parse(localStorage.getItem('studentOS_finances')) || [];
+    let financeChart = null;
+    const financeContainer = document.getElementById('financeContainer');
+    const financeModal = document.getElementById('financeModal');
+
+    function renderFinance() {
+        financeContainer.innerHTML = '';
+        
+        let totalIncome = 0;
+        let totalExpense = 0;
+        let totalDebt = 0;
+
+        if (finances.length === 0) {
+            financeContainer.innerHTML = `<p class="text-xs text-slate-500 text-center py-4">Belum ada transaksi</p>`;
+        }
+
+        // Render List
+        finances.forEach((item, index) => {
+            const amount = parseFloat(item.amount);
+            let colorClass = '';
+            let icon = '';
+
+            if (item.type === 'Pemasukan') {
+                totalIncome += amount;
+                colorClass = 'text-green-400';
+                icon = 'arrow-up-right';
+            } else if (item.type === 'Pengeluaran') {
+                totalExpense += amount;
+                colorClass = 'text-red-400';
+                icon = 'arrow-down-left';
+            } else {
+                totalDebt += amount;
+                colorClass = 'text-orange-400';
+                icon = 'alert-circle';
+            }
+
+            // REVISI LAYOUT: 3 Kolom Sejajar (Kiri: Info, Tengah: Waktu, Kanan: Nominal)
+            financeContainer.innerHTML += `
+            <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5 hover:border-white/10 group gap-2">
+                
+                <div class="flex items-center gap-3 w-1/3 min-w-0">
+                    <div class="p-2 rounded-lg bg-white/5 ${colorClass} shrink-0">
+                        <i data-lucide="${icon}" class="w-4 h-4"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-xs font-bold text-white truncate" title="${item.title}">${item.title}</p>
+                        <p class="text-[10px] text-slate-400 truncate">${item.type}</p>
+                    </div>
+                </div>
+
+                <div class="text-center w-1/3 hidden sm:block">
+                    <span class="text-[9px] text-slate-500 font-mono bg-white/5 px-2 py-1 rounded-full border border-white/5 whitespace-nowrap">
+                        ${formatDateTime(item.date)}
+                    </span>
+                </div>
+
+                <div class="text-right w-1/3 min-w-0 pl-2">
+                    <p class="text-xs font-bold ${colorClass} truncate">${formatRupiah(amount)}</p>
+                    <button onclick="deleteFinance(${index})" class="text-[10px] text-slate-500 hover:text-red-500 opacity-0 group-hover:opacity-100 transition">Hapus</button>
+                </div>
+            </div>`;
+        });
+
+        // Hitung Laba Bersih
+        const netProfit = totalIncome - totalExpense - totalDebt;
+        
+        // Tampilkan Laba Bersih (Inject ke HTML jika belum ada elemennya)
+        let totalDisplay = document.getElementById('totalFinanceDisplay');
+        if(!totalDisplay) {
+            // Jika elemen belum ada, buat baru di atas container list
+            const header = financeContainer.previousElementSibling; // elemen judul 'Riwayat Transaksi'
+            // Kita ubah styling header list agar menampung total
+            header.className = "flex justify-between items-end mb-2";
+            header.innerHTML = `
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Riwayat Transaksi</span>
+                <span id="totalFinanceDisplay" class="text-xs font-bold text-white">Laba Bersih: Rp 0</span>
+            `;
+            totalDisplay = document.getElementById('totalFinanceDisplay');
+        }
+
+        // Update Text & Warna Laba Bersih
+        totalDisplay.textContent = `Laba Bersih: ${formatRupiah(netProfit)}`;
+        totalDisplay.className = `text-xs font-bold ${netProfit >= 0 ? 'text-green-400' : 'text-red-400'}`;
+
+        updateFinanceChart(totalIncome, totalExpense, totalDebt);
+        lucide.createIcons();
+    }
+
+    function updateFinanceChart(income, expense, debt) {
+        const ctx = document.getElementById('financeChart').getContext('2d');
+        if (financeChart) financeChart.destroy();
+
+        financeChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Masuk', 'Keluar', 'Utang'],
+                datasets: [{
+                    label: 'Nominal',
+                    data: [income, expense, debt],
+                    backgroundColor: ['#4ade80', '#f87171', '#fb923c'],
+                    borderRadius: 5,
+                    barThickness: 40
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#94a3b8', font: {size: 10} } },
+                    x: { grid: { display: false }, ticks: { color: '#cbd5e1' } }
+                }
+            }
+        });
+    }
+
+    // Events
+    document.getElementById('addFinanceBtn').addEventListener('click', () => financeModal.classList.remove('hidden'));
+    document.getElementById('closeFinanceModal').addEventListener('click', () => financeModal.classList.add('hidden'));
+
+    document.getElementById('addFinanceForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const title = document.getElementById('finTitle').value;
+        const rawAmount = document.getElementById('finAmount').value.replace(/\./g, '');
+        const type = document.querySelector('input[name="finType"]:checked').value;
+        const date = new Date().toISOString(); 
+
+        if(rawAmount === '' || isNaN(rawAmount)) return alert("Masukkan nominal yang benar");
+
+        finances.unshift({ title, amount: rawAmount, type, date });
+        localStorage.setItem('studentOS_finances', JSON.stringify(finances));
+        renderFinance();
+        e.target.reset();
+        financeModal.classList.add('hidden');
+    });
+
+    window.deleteFinance = (index) => {
+        finances.splice(index, 1);
+        localStorage.setItem('studentOS_finances', JSON.stringify(finances));
+        renderFinance();
+    };
+
+
+    // --- 2. INVESTMENT TRACKER ---
+    let investments = JSON.parse(localStorage.getItem('studentOS_investments')) || [];
+    let investChart = null;
+    const investContainer = document.getElementById('investContainer');
+    const investModal = document.getElementById('investModal');
+
+    function renderInvest() {
+        investContainer.innerHTML = '';
+        let totalInvest = 0;
+        let allocation = { 'Saham': 0, 'Reksadana': 0, 'Crypto': 0, 'Emas': 0, 'Cash/Deposito': 0 };
+
+        if (investments.length === 0) {
+            investContainer.innerHTML = `<p class="text-xs text-slate-500 text-center py-4">Belum ada aset</p>`;
+        }
+
+        investments.forEach((item, index) => {
+            const amount = parseFloat(item.amount);
+            totalInvest += amount;
+            if(allocation[item.type] !== undefined) allocation[item.type] += amount;
+
+            let icon = 'trending-up';
+            if(item.type === 'Crypto') icon = 'bitcoin';
+            if(item.type === 'Emas') icon = 'layers';
+            if(item.type === 'Cash/Deposito') icon = 'banknote';
+
+            // REVISI LAYOUT: 3 Kolom Sejajar
+            investContainer.innerHTML += `
+            <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5 hover:border-yellow-500/30 group gap-2">
+                
+                <div class="flex items-center gap-3 w-1/3 min-w-0">
+                    <div class="p-2 rounded-lg bg-yellow-500/10 text-yellow-400 shrink-0">
+                        <i data-lucide="${icon}" class="w-4 h-4"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-xs font-bold text-white truncate" title="${item.name}">${item.name}</p>
+                        <p class="text-[10px] text-slate-400 truncate">${item.type}</p>
+                    </div>
+                </div>
+
+                <div class="text-center w-1/3 hidden sm:block">
+                    <span class="text-[9px] text-slate-500 font-mono bg-white/5 px-2 py-1 rounded-full border border-white/5 whitespace-nowrap">
+                        ${formatDateTime(item.date)}
+                    </span>
+                </div>
+
+                <div class="text-right w-1/3 min-w-0 pl-2">
+                    <p class="text-xs font-bold text-white truncate">${formatRupiah(amount)}</p>
+                    <button onclick="deleteInvest(${index})" class="text-[10px] text-slate-500 hover:text-red-500 opacity-0 group-hover:opacity-100 transition">Jual</button>
+                </div>
+            </div>`;
+        });
+
+        document.getElementById('totalInvestDisplay').textContent = `Total: ${formatRupiah(totalInvest)}`;
+        updateInvestChart(allocation);
+        lucide.createIcons();
+    }
+
+    function updateInvestChart(dataObj) {
+        const ctx = document.getElementById('investChart').getContext('2d');
+        if (investChart) investChart.destroy();
+
+        investChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(dataObj),
+                datasets: [{
+                    data: Object.values(dataObj),
+                    backgroundColor: ['#facc15', '#3b82f6', '#a855f7', '#fb923c', '#10b981'],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '60%',
+                plugins: {
+                    legend: { position: 'right', labels: { color: '#cbd5e1', font: {size: 10}, boxWidth: 10 } }
+                }
+            }
+        });
+    }
+
+    document.getElementById('addInvestBtn').addEventListener('click', () => investModal.classList.remove('hidden'));
+    document.getElementById('closeInvestModal').addEventListener('click', () => investModal.classList.add('hidden'));
+
+    document.getElementById('addInvestForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('invName').value;
+        const rawAmount = document.getElementById('invAmount').value.replace(/\./g, '');
+        const type = document.getElementById('invType').value;
+        const date = new Date().toISOString(); 
+
+        if(rawAmount === '' || isNaN(rawAmount)) return alert("Masukkan nilai aset yang benar");
+
+        investments.push({ name, amount: rawAmount, type, date });
+        localStorage.setItem('studentOS_investments', JSON.stringify(investments));
+        renderInvest();
+        e.target.reset();
+        investModal.classList.add('hidden');
+    });
+
+    window.deleteInvest = (index) => {
+        if(confirm("Hapus aset ini?")) {
+            investments.splice(index, 1);
+            localStorage.setItem('studentOS_investments', JSON.stringify(investments));
+            renderInvest();
+        }
+    };
+
+    renderFinance();
+    renderInvest();
+    // ==========================================
+    // LOGIKA KESEHATAN (WORKOUT & MEAL)
+    // ==========================================
+// ==========================================
+    // LOGIKA SLEEP & BODY (LINE CHART & DURATION)
+    // ==========================================
+
+    // --- 1. SLEEP MONITOR ---
+    let sleepLogs = JSON.parse(localStorage.getItem('studentOS_sleep')) || [];
+    let sleepChart = null;
+    const sleepContainer = document.getElementById('sleepContainer');
+    const sleepModal = document.getElementById('sleepModal');
+
+    function renderSleep() {
+        sleepContainer.innerHTML = '';
+        let totalHours = 0;
+        let chartLabels = [];
+        let chartData = [];
+
+        if (sleepLogs.length === 0) {
+            sleepContainer.innerHTML = `<p class="text-xs text-slate-500 text-center py-4">Belum ada data tidur</p>`;
+        }
+
+        // Urutkan dari yang terbaru
+        sleepLogs.sort((a, b) => new Date(b.end) - new Date(a.end));
+
+        // Ambil 7 data terakhir untuk chart (biar gak kepenuhan) (dibalik biar urut tanggal di chart)
+        const recentLogs = [...sleepLogs].reverse().slice(-7);
+
+        recentLogs.forEach(log => {
+            const start = new Date(log.start);
+            const end = new Date(log.end);
+            // Hitung durasi dalam jam (desimal)
+            const duration = ((end - start) / (1000 * 60 * 60)).toFixed(1);
+            
+            chartLabels.push(end.toLocaleDateString('id-ID', {day: 'numeric', month: 'short'}));
+            chartData.push(duration);
+        });
+        
+        // Render List
+        sleepLogs.forEach((item, index) => {
+            const start = new Date(item.start);
+            const end = new Date(item.end);
+            const duration = ((end - start) / (1000 * 60 * 60)).toFixed(1);
+            totalHours += parseFloat(duration);
+
+            let colorClass = 'text-yellow-400'; // Sedang
+            if(item.quality === 'Buruk') colorClass = 'text-red-400';
+            if(item.quality === 'Nyenyak') colorClass = 'text-indigo-400';
+
+            sleepContainer.innerHTML += `
+            <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5 hover:border-indigo-500/30 group gap-2">
+                <div class="flex items-center gap-3 w-1/3 min-w-0">
+                    <div class="p-2 rounded-lg bg-indigo-500/10 ${colorClass} shrink-0">
+                        <i data-lucide="moon" class="w-4 h-4"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-xs font-bold text-white truncate">${item.quality}</p>
+                        <p class="text-[10px] text-slate-400 truncate">${duration} Jam</p>
+                    </div>
+                </div>
+                <div class="text-center w-1/3 hidden sm:block">
+                    <span class="text-[9px] text-slate-500 font-mono bg-white/5 px-2 py-1 rounded-full border border-white/5 whitespace-nowrap">
+                        ${end.toLocaleDateString('id-ID', {weekday: 'short', day: 'numeric', month: 'short'})}
+                    </span>
+                </div>
+                <div class="text-right w-1/3 pl-2">
+                    <p class="text-[10px] text-slate-400">Bangun:</p>
+                    <p class="text-xs font-bold text-white">${end.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})}</p>
+                    <button onclick="deleteSleep(${index})" class="text-[10px] text-slate-500 hover:text-red-500 opacity-0 group-hover:opacity-100 transition absolute top-2 right-2">Hapus</button>
+                </div>
+            </div>`;
+        });
+
+        // Hitung Rata-rata
+        const avg = sleepLogs.length > 0 ? (totalHours / sleepLogs.length).toFixed(1) : 0;
+        document.getElementById('avgSleepDisplay').textContent = `Rata-rata: ${avg} Jam`;
+
+        updateSleepChart(chartLabels, chartData);
+        lucide.createIcons();
+    }
+
+    function updateSleepChart(labels, data) {
+        const ctx = document.getElementById('sleepChart').getContext('2d');
+        if (sleepChart) sleepChart.destroy();
+
+        sleepChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Durasi (Jam)',
+                    data: data,
+                    backgroundColor: '#818cf8',
+                    borderRadius: 4,
+                    barThickness: 20
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#94a3b8', font: {size: 10} } },
+                    x: { grid: { display: false }, ticks: { color: '#cbd5e1', font: {size: 9} } }
+                }
+            }
+        });
+    }
+
+    document.getElementById('addSleepBtn').addEventListener('click', () => sleepModal.classList.remove('hidden'));
+    document.getElementById('closeSleepModal').addEventListener('click', () => sleepModal.classList.add('hidden'));
+
+    document.getElementById('addSleepForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const start = document.getElementById('sleepStart').value;
+        const end = document.getElementById('sleepEnd').value;
+        const quality = document.querySelector('input[name="sleepQual"]:checked').value;
+
+        if(new Date(end) <= new Date(start)) {
+            alert("Waktu bangun harus setelah waktu tidur!");
+            return;
+        }
+
+        sleepLogs.unshift({ start, end, quality });
+        localStorage.setItem('studentOS_sleep', JSON.stringify(sleepLogs));
+        renderSleep();
+        e.target.reset();
+        sleepModal.classList.add('hidden');
+    });
+
+    window.deleteSleep = (index) => {
+        if(confirm("Hapus log tidur ini?")) {
+            sleepLogs.splice(index, 1);
+            localStorage.setItem('studentOS_sleep', JSON.stringify(sleepLogs));
+            renderSleep();
+        }
+    };
+
+
+    // --- 2. BODY MEASUREMENT (LINE CHART) ---
+    let bodyLogs = JSON.parse(localStorage.getItem('studentOS_body')) || [];
+    let bodyChart = null;
+    const bodyContainer = document.getElementById('bodyContainer');
+    const bodyModal = document.getElementById('bodyModal');
+
+    function renderBody() {
+        bodyContainer.innerHTML = '';
+        let chartLabels = [];
+        let chartData = [];
+
+        if (bodyLogs.length === 0) {
+            bodyContainer.innerHTML = `<p class="text-xs text-slate-500 text-center py-4">Belum ada catatan fisik</p>`;
+            document.getElementById('latestWeightDisplay').textContent = "Saat ini: - kg";
+        } else {
+            // Urutkan berdasarkan tanggal (Ascending untuk Chart)
+            bodyLogs.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            // Update Label Terakhir
+            const latest = bodyLogs[bodyLogs.length - 1];
+            document.getElementById('latestWeightDisplay').textContent = `Saat ini: ${latest.weight} kg`;
+
+            // Data untuk Chart
+            bodyLogs.forEach(log => {
+                chartLabels.push(new Date(log.date).toLocaleDateString('id-ID', {day: 'numeric', month: 'short'}));
+                chartData.push(log.weight);
+            });
+
+            // Render List (Descending / Terbaru diatas)
+            [...bodyLogs].reverse().forEach((item, index) => {
+                // Cari index asli karena kita reverse array untuk tampilan
+                const originalIndex = bodyLogs.length - 1 - index; 
+
+                bodyContainer.innerHTML += `
+                <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5 hover:border-rose-500/30 group gap-2">
+                    <div class="flex items-center gap-3 w-1/3 min-w-0">
+                        <div class="p-2 rounded-lg bg-rose-500/10 text-rose-400 shrink-0">
+                            <i data-lucide="scale" class="w-4 h-4"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-xs font-bold text-white truncate">${item.weight} kg</p>
+                            <p class="text-[10px] text-slate-400 truncate">Berat</p>
+                        </div>
+                    </div>
+                    <div class="text-center w-1/3 hidden sm:block">
+                        <span class="text-[9px] text-slate-500 font-mono bg-white/5 px-2 py-1 rounded-full border border-white/5 whitespace-nowrap">
+                            ${new Date(item.date).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'})}
+                        </span>
+                    </div>
+                    <div class="text-right w-1/3 pl-2">
+                        <p class="text-xs font-bold text-white truncate">${item.waist || '-'} cm</p>
+                        <p class="text-[10px] text-slate-400 truncate">Pinggang</p>
+                        <button onclick="deleteBody(${originalIndex})" class="text-[10px] text-slate-500 hover:text-red-500 opacity-0 group-hover:opacity-100 transition absolute top-2 right-2">Hapus</button>
+                    </div>
+                </div>`;
+            });
+        }
+
+        updateBodyChart(chartLabels, chartData);
+        lucide.createIcons();
+    }
+
+    function updateBodyChart(labels, data) {
+        const ctx = document.getElementById('bodyChart').getContext('2d');
+        if (bodyChart) bodyChart.destroy();
+
+        bodyChart = new Chart(ctx, {
+            type: 'line', // Grafik Garis
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Berat (kg)',
+                    data: data,
+                    borderColor: '#f43f5e', // Warna Rose
+                    backgroundColor: 'rgba(244, 63, 94, 0.1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#f43f5e',
+                    tension: 0.4, // Garis melengkung halus
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#94a3b8', font: {size: 10} } },
+                    x: { grid: { display: false }, ticks: { color: '#cbd5e1', font: {size: 9} } }
+                }
+            }
+        });
+    }
+
+    document.getElementById('addBodyBtn').addEventListener('click', () => bodyModal.classList.remove('hidden'));
+    document.getElementById('closeBodyModal').addEventListener('click', () => bodyModal.classList.add('hidden'));
+
+    document.getElementById('addBodyForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const date = document.getElementById('bodyDate').value;
+        const weight = document.getElementById('bodyWeight').value;
+        const waist = document.getElementById('bodyWaist').value;
+
+        bodyLogs.push({ date, weight, waist });
+        localStorage.setItem('studentOS_body', JSON.stringify(bodyLogs));
+        renderBody();
+        e.target.reset();
+        bodyModal.classList.add('hidden');
+    });
+
+    window.deleteBody = (index) => {
+        if(confirm("Hapus catatan ini?")) {
+            bodyLogs.splice(index, 1);
+            localStorage.setItem('studentOS_body', JSON.stringify(bodyLogs));
+            renderBody();
+        }
+    };
+
+    renderSleep();
+    renderBody();
+    // --- 1. WORKOUT LOG ---
+    let workouts = JSON.parse(localStorage.getItem('studentOS_workouts')) || [];
+    let workoutChart = null;
+    const workoutContainer = document.getElementById('workoutContainer');
+    const workoutModal = document.getElementById('workoutModal');
+
+    function renderWorkout() {
+        workoutContainer.innerHTML = '';
+        let totalCals = 0;
+        let durationData = { 'Kardio': 0, 'Angkat Beban': 0 };
+
+        if (workouts.length === 0) {
+            workoutContainer.innerHTML = `<p class="text-xs text-slate-500 text-center py-4">Belum ada data latihan</p>`;
+        }
+
+        workouts.forEach((item, index) => {
+            const cal = parseInt(item.calories);
+            const dur = parseInt(item.duration);
+            totalCals += cal;
+            
+            // Grouping data for Chart
+            if(durationData[item.type] !== undefined) durationData[item.type] += dur;
+
+            // Icon Mapping
+            let icon = item.type === 'Kardio' ? 'activity' : 'dumbbell';
+            let colorClass = item.type === 'Kardio' ? 'text-orange-400' : 'text-red-400';
+
+            // Layout 3 Kolom Sejajar
+            workoutContainer.innerHTML += `
+            <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5 hover:border-orange-500/30 group gap-2">
+                
+                <div class="flex items-center gap-3 w-1/3 min-w-0">
+                    <div class="p-2 rounded-lg bg-orange-500/10 ${colorClass} shrink-0">
+                        <i data-lucide="${icon}" class="w-4 h-4"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-xs font-bold text-white truncate" title="${item.name}">${item.name}</p>
+                        <p class="text-[10px] text-slate-400 truncate">${item.type}</p>
+                    </div>
+                </div>
+
+                <div class="text-center w-1/3 hidden sm:block">
+                    <span class="text-[9px] text-slate-500 font-mono bg-white/5 px-2 py-1 rounded-full border border-white/5 whitespace-nowrap">
+                        ${formatDateTime(item.date)}
+                    </span>
+                </div>
+
+                <div class="text-right w-1/3 min-w-0 pl-2">
+                    <p class="text-xs font-bold text-white truncate">${item.duration} Min</p>
+                    <p class="text-[10px] ${colorClass} truncate">${item.calories} kcal</p>
+                    <button onclick="deleteWorkout(${index})" class="text-[10px] text-slate-500 hover:text-red-500 opacity-0 group-hover:opacity-100 transition absolute top-2 right-2">Hapus</button>
+                </div>
+            </div>`;
+        });
+
+        document.getElementById('totalCaloriesDisplay').textContent = `Total Kalori: ${totalCals} kcal`;
+        updateWorkoutChart(durationData);
+        lucide.createIcons();
+    }
+
+    function updateWorkoutChart(dataObj) {
+        const ctx = document.getElementById('workoutChart').getContext('2d');
+        if (workoutChart) workoutChart.destroy();
+
+        workoutChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(dataObj),
+                datasets: [{
+                    label: 'Durasi (Menit)',
+                    data: Object.values(dataObj),
+                    backgroundColor: ['#fb923c', '#ef4444'],
+                    borderRadius: 5,
+                    barThickness: 40
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#94a3b8', font: {size: 10} } },
+                    x: { grid: { display: false }, ticks: { color: '#cbd5e1' } }
+                }
+            }
+        });
+    }
+
+    // Workout Events
+    document.getElementById('addWorkoutBtn').addEventListener('click', () => workoutModal.classList.remove('hidden'));
+    document.getElementById('closeWorkoutModal').addEventListener('click', () => workoutModal.classList.add('hidden'));
+
+    document.getElementById('addWorkoutForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('woName').value;
+        const duration = document.getElementById('woDuration').value;
+        const calories = document.getElementById('woCalories').value;
+        const type = document.querySelector('input[name="woType"]:checked').value;
+        const date = new Date().toISOString();
+
+        workouts.unshift({ name, duration, calories, type, date });
+        localStorage.setItem('studentOS_workouts', JSON.stringify(workouts));
+        renderWorkout();
+        e.target.reset();
+        workoutModal.classList.add('hidden');
+    });
+
+    window.deleteWorkout = (index) => {
+        if(confirm("Hapus log latihan ini?")) {
+            workouts.splice(index, 1);
+            localStorage.setItem('studentOS_workouts', JSON.stringify(workouts));
+            renderWorkout();
+        }
+    };
+
+
+    // --- 2. MEAL TRACKER ---
+    let meals = JSON.parse(localStorage.getItem('studentOS_meals')) || [];
+    let mealChart = null;
+    const mealContainer = document.getElementById('mealContainer');
+    const mealModal = document.getElementById('mealModal');
+
+    function renderMeal() {
+        mealContainer.innerHTML = '';
+        let totalCals = 0;
+        let nutrisiData = { 'Karbohidrat': 0, 'Protein': 0, 'Sayur & Serat': 0, 'Lainnya': 0 };
+
+        if (meals.length === 0) {
+            mealContainer.innerHTML = `<p class="text-xs text-slate-500 text-center py-4">Belum ada jurnal makanan</p>`;
+        }
+
+        meals.forEach((item, index) => {
+            const cal = parseInt(item.calories);
+            totalCals += cal;
+            
+            // Grouping data for Chart (Frequency count per type)
+            if(nutrisiData[item.type] !== undefined) nutrisiData[item.type] += 1;
+
+            let icon = 'utensils';
+            let colorClass = 'text-lime-400';
+            if(item.type === 'Karbohidrat') colorClass = 'text-yellow-400';
+            if(item.type === 'Protein') colorClass = 'text-red-400';
+            if(item.type === 'Sayur & Serat') colorClass = 'text-green-400';
+
+            mealContainer.innerHTML += `
+            <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5 hover:border-lime-500/30 group gap-2">
+                
+                <div class="flex items-center gap-3 w-1/3 min-w-0">
+                    <div class="p-2 rounded-lg bg-lime-500/10 ${colorClass} shrink-0">
+                        <i data-lucide="${icon}" class="w-4 h-4"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-xs font-bold text-white truncate" title="${item.name}">${item.name}</p>
+                        <p class="text-[10px] text-slate-400 truncate">${item.type}</p>
+                    </div>
+                </div>
+
+                <div class="text-center w-1/3 hidden sm:block">
+                    <span class="text-[9px] text-slate-500 font-mono bg-white/5 px-2 py-1 rounded-full border border-white/5 whitespace-nowrap">
+                        ${formatDateTime(item.date)}
+                    </span>
+                </div>
+
+                <div class="text-right w-1/3 min-w-0 pl-2">
+                    <p class="text-xs font-bold text-white truncate">${item.calories} kcal</p>
+                    <button onclick="deleteMeal(${index})" class="text-[10px] text-slate-500 hover:text-red-500 opacity-0 group-hover:opacity-100 transition absolute top-2 right-2">Hapus</button>
+                </div>
+            </div>`;
+        });
+
+        document.getElementById('totalMealCalDisplay').textContent = `Total Intake: ${totalCals} kcal`;
+        updateMealChart(nutrisiData);
+        lucide.createIcons();
+    }
+
+    function updateMealChart(dataObj) {
+        const ctx = document.getElementById('mealChart').getContext('2d');
+        if (mealChart) mealChart.destroy();
+
+        mealChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: Object.keys(dataObj),
+                datasets: [{
+                    data: Object.values(dataObj),
+                    backgroundColor: ['#facc15', '#f87171', '#4ade80', '#94a3b8'],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'right', labels: { color: '#cbd5e1', font: {size: 10}, boxWidth: 10 } }
+                }
+            }
+        });
+    }
+
+    // Meal Events
+    document.getElementById('addMealBtn').addEventListener('click', () => mealModal.classList.remove('hidden'));
+    document.getElementById('closeMealModal').addEventListener('click', () => mealModal.classList.add('hidden'));
+
+    document.getElementById('addMealForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('mealName').value;
+        const calories = document.getElementById('mealCalories').value;
+        const type = document.getElementById('mealType').value;
+        const date = new Date().toISOString();
+
+        meals.unshift({ name, calories, type, date });
+        localStorage.setItem('studentOS_meals', JSON.stringify(meals));
+        renderMeal();
+        e.target.reset();
+        mealModal.classList.add('hidden');
+    });
+
+    window.deleteMeal = (index) => {
+        if(confirm("Hapus data makanan ini?")) {
+            meals.splice(index, 1);
+            localStorage.setItem('studentOS_meals', JSON.stringify(meals));
+            renderMeal();
+        }
+    };
+
+    // Jalankan Render
+    renderWorkout();
+    renderMeal();
+       // --- 1. INTERNSHIP LOGIC ---
+    let internships = JSON.parse(localStorage.getItem('studentOS_internships')) || [];
+    const internContainer = document.getElementById('internContainer');
+    const internModal = document.getElementById('internModal');
+
+    function renderInternships() {
+        internContainer.innerHTML = '';
+        if (internships.length === 0) {
+            internContainer.innerHTML = `
+                <div class="flex flex-col items-center justify-center h-full border-2 border-dashed border-white/5 rounded-2xl bg-white/[0.02] min-h-[150px]">
+                    <i data-lucide="briefcase" class="w-8 h-8 mb-2 text-slate-600"></i>
+                    <p class="text-xs text-slate-500">Belum ada data magang</p>
+                </div>`;
+        } else {
+            internships.forEach((item, index) => {
+                // Badge warna berdasarkan tipe
+                let typeBadge = item.type === 'Remote' ? 'bg-purple-500/20 text-purple-300' : 'bg-cyan-500/20 text-cyan-300';
+                
+                internContainer.innerHTML += `
+                <div class="bg-white/5 p-4 rounded-xl border border-white/5 hover:border-cyan-500/30 transition group relative">
+                    <button onclick="deleteIntern(${index})" class="absolute top-3 right-3 text-slate-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-600 to-blue-600 flex items-center justify-center text-white shrink-0 shadow-lg shadow-cyan-900/50">
+                            <span class="font-bold text-sm">${item.company.charAt(0)}</span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-white font-bold text-sm truncate">${item.role}</h4>
+                            <p class="text-xs text-slate-300 mb-1 truncate">${item.company}</p>
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="text-[10px] px-2 py-0.5 rounded ${typeBadge} border border-white/5">${item.type}</span>
+                                <span class="text-[10px] text-slate-500 flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3"></i> ${item.period}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            });
+        }
+        lucide.createIcons();
+    }
+
+    // Event Listeners Internship
+    document.getElementById('addInternBtn').addEventListener('click', () => internModal.classList.remove('hidden'));
+    document.getElementById('closeInternModal').addEventListener('click', () => internModal.classList.add('hidden'));
+
+    document.getElementById('addInternForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const company = document.getElementById('internCompany').value;
+        const role = document.getElementById('internRole').value;
+        const period = document.getElementById('internPeriod').value;
+        const type = document.getElementById('internType').value;
+
+        internships.push({ company, role, period, type });
+        localStorage.setItem('studentOS_internships', JSON.stringify(internships));
+        renderInternships();
+        e.target.reset();
+        internModal.classList.add('hidden');
+    });
+
+    window.deleteIntern = (index) => {
+        if(confirm("Hapus data magang ini?")) {
+            internships.splice(index, 1);
+            localStorage.setItem('studentOS_internships', JSON.stringify(internships));
+            renderInternships();
+        }
+    };
+
+
+    // --- 2. WORK LOGIC ---
+    let works = JSON.parse(localStorage.getItem('studentOS_works')) || [];
+    const workContainer = document.getElementById('workContainer');
+    const workModal = document.getElementById('workModal');
+
+    function renderWorks() {
+        workContainer.innerHTML = '';
+        if (works.length === 0) {
+            workContainer.innerHTML = `
+                <div class="flex flex-col items-center justify-center h-full border-2 border-dashed border-white/5 rounded-2xl bg-white/[0.02] min-h-[150px]">
+                    <i data-lucide="building-2" class="w-8 h-8 mb-2 text-slate-600"></i>
+                    <p class="text-xs text-slate-500">Belum ada data kerja</p>
+                </div>`;
+        } else {
+            works.forEach((item, index) => {
+                // Badge warna
+                let typeBadge = 'bg-emerald-500/20 text-emerald-300';
+                if(item.type === 'Freelance') typeBadge = 'bg-orange-500/20 text-orange-300';
+                
+                workContainer.innerHTML += `
+                <div class="bg-white/5 p-4 rounded-xl border border-white/5 hover:border-emerald-500/30 transition group relative">
+                    <button onclick="deleteWork(${index})" class="absolute top-3 right-3 text-slate-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-600 to-green-600 flex items-center justify-center text-white shrink-0 shadow-lg shadow-emerald-900/50">
+                            <span class="font-bold text-sm">${item.company.charAt(0)}</span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-white font-bold text-sm truncate">${item.role}</h4>
+                            <p class="text-xs text-slate-300 mb-1 truncate">${item.company}</p>
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="text-[10px] px-2 py-0.5 rounded ${typeBadge} border border-white/5">${item.type}</span>
+                                <span class="text-[10px] text-slate-500 flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3"></i> ${item.period}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            });
+        }
+        lucide.createIcons();
+    }
+
+    // Event Listeners Work
+    document.getElementById('addWorkBtn').addEventListener('click', () => workModal.classList.remove('hidden'));
+    document.getElementById('closeWorkModal').addEventListener('click', () => workModal.classList.add('hidden'));
+
+    document.getElementById('addWorkForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const company = document.getElementById('workCompany').value;
+        const role = document.getElementById('workRole').value;
+        const period = document.getElementById('workPeriod').value;
+        const type = document.getElementById('workType').value;
+
+        works.push({ company, role, period, type });
+        localStorage.setItem('studentOS_works', JSON.stringify(works));
+        renderWorks();
+        e.target.reset();
+        workModal.classList.add('hidden');
+    });
+
+    window.deleteWork = (index) => {
+        if(confirm("Hapus data pekerjaan ini?")) {
+            works.splice(index, 1);
+            localStorage.setItem('studentOS_works', JSON.stringify(works));
+            renderWorks();
+        }
+    };
+
+    // STARTUP RENDER
+    renderInternships();
+    renderWorks();
+    // ==========================================
+    // LOGIKA PROFIL PENGGUNA (DYNAMIC SAVE)
+    // ==========================================
+    
+    // 1. Load Data Profil (atau default jika belum ada)
+    let userProfile = JSON.parse(localStorage.getItem('studentOS_profile')) || {
+        name: "Nabil",
+        image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
+        status: "StudentOS v1.0 • <span class='text-green-400'>Online</span>"
+    };
+
+    // Elemen DOM
+    const headerNameEl = document.getElementById('headerName');
+    const headerImgEl = document.getElementById('headerImg');
+    const headerStatusEl = document.getElementById('headerStatus');
+    const greetingNameEl = document.querySelector('#greetingText + h2'); // Target h2 di widget cuaca
+
+    // Modal Elements
+    const profileBtn = document.getElementById('profileBtn');
+    const profileModal = document.getElementById('profileModal');
+    const closeProfileModal = document.getElementById('closeProfileModal');
+    const editProfileForm = document.getElementById('editProfileForm');
+    
+    // Input Elements
+    const inputProfileName = document.getElementById('inputProfileName');
+    const inputProfileImg = document.getElementById('inputProfileImg');
+    const inputProfileStatus = document.getElementById('inputProfileStatus');
+
+    // 2. Fungsi Render (Update Tampilan Header)
+    function renderProfile() {
+        // Update Header Kiri
+        headerNameEl.textContent = userProfile.name;
+        headerImgEl.src = userProfile.image;
+        headerStatusEl.innerHTML = userProfile.status; // innerHTML biar bisa pakai warna span
+
+        // Update juga Nama di Widget Tengah (Cuaca)
+        if(greetingNameEl) {
+            greetingNameEl.textContent = `Halo, ${userProfile.name}!`;
+        }
+    }
+
+    // 3. Event Listeners
+    
+    // Buka Modal
+    profileBtn.addEventListener('click', () => {
+        // Isi form dengan data saat ini
+        inputProfileName.value = userProfile.name;
+        inputProfileImg.value = userProfile.image;
+        // Hapus tag HTML dari status saat mau diedit biar bersih
+        inputProfileStatus.value = userProfile.status.replace(/<[^>]*>?/gm, ''); 
+        
+        profileModal.classList.remove('hidden');
+    });
+
+    // Tutup Modal
+    closeProfileModal.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation(); // Mencegah klik tembus
+        profileModal.classList.add('hidden');
+    });
+
+    // Simpan Data
+    editProfileForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        // Update Object Data
+        userProfile.name = inputProfileName.value;
+        
+        // Jika input gambar kosong, pakai gambar lama/default
+        if(inputProfileImg.value.trim() !== "") {
+            userProfile.image = inputProfileImg.value;
+        }
+
+        // Simpan status (kita tambahkan warna hijau manual jika user mengetik kata 'Online')
+        let statusRaw = inputProfileStatus.value;
+        if(statusRaw.includes('Online')) {
+             statusRaw = statusRaw.replace('Online', "<span class='text-green-400'>Online</span>");
+        }
+        userProfile.status = statusRaw;
+
+        // Simpan ke Browser & Render Ulang
+        localStorage.setItem('studentOS_profile', JSON.stringify(userProfile));
+        renderProfile();
+        
+        profileModal.classList.add('hidden');
+        alert("Profil berhasil diupdate! ✨");
+    });
+
+    // Jalankan Render saat awal load
+    renderProfile();
+    // ==========================================
+    // LOGIKA CUACA (OPENWEATHERMAP)
+    // ==========================================
+    const weatherWidget = document.getElementById('weatherWidget');
+updateGreeting();
+    setInterval(updateGreeting, 60000); // Cek tiap menit
+
+    // 2. LOGIKA CUACA DETAIL (OPENWEATHERMAP)
+    const API_KEY = "314fdcd1125562de9cf44c74cba1ea2f"; 
+    
+    function getWeather() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(success, error);
+        } else {
+            document.getElementById('locationText').textContent = "GPS Mati";
+        }
+    }
+
+    function success(position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=id`;
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) throw new Error("API Error");
+                return response.json();
+            })
+            .then(data => {
+                // Ekstrak Data
+                const temp = Math.round(data.main.temp);
+                const feelsLike = Math.round(data.main.feels_like);
+                const humidity = data.main.humidity;
+                const wind = (data.wind.speed * 3.6).toFixed(1); // Convert m/s to km/h
+                const city = data.name;
+                const desc = data.weather[0].description;
+                const iconCode = data.weather[0].icon;
+
+                // Render ke HTML
+                document.getElementById('locationText').textContent = city;
+                document.getElementById('mainTemp').textContent = `${temp}°`;
+                document.getElementById('weatherDesc').textContent = desc;
+                
+                const iconImg = document.getElementById('weatherIcon');
+                iconImg.src = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+                iconImg.classList.remove('hidden');
+
+                // Detail Metrics
+                document.getElementById('feelsLike').textContent = `${feelsLike}°`;
+                document.getElementById('humidity').textContent = `${humidity}%`;
+                document.getElementById('windSpeed').textContent = `${wind} km/h`;
+            })
+            .catch((err) => {
+                console.error(err);
+                document.getElementById('locationText').textContent = "Gagal Muat";
+            });
+    }
+
+    function error() {
+        document.getElementById('locationText').textContent = "Izin Ditolak";
+    }
+
+    // Jalankan Cuaca
+    getWeather();
+    function renderWeatherError(msg) {
+        weatherWidget.innerHTML = `
+            <i data-lucide="cloud-off" class="w-5 h-5 text-slate-500"></i>
+            <span class="text-[10px] text-slate-500">${msg}</span>
+        `;
+        lucide.createIcons();
+    }
+
+    // Panggil Cuaca
+  
+
+
+    // ==========================================
+    // LOGIKA MUSIK PLAYER (YOUTUBE API)
+    // ==========================================
+    // ==========================================
+    // LOGIKA MUSIK PLAYER (FINAL FIX)
+    // ==========================================
+  function updateGreeting() {
+        const hour = new Date().getHours();
+        const greetElement = document.getElementById('greetingText');
+        let greet = '';
+
+        if (hour >= 5 && hour < 11) {
+            greet = 'Selamat Pagi 🌅';
+        } else if (hour >= 11 && hour < 15) {
+            greet = 'Selamat Siang ☀️';
+        } else if (hour >= 15 && hour < 18) {
+            greet = 'Selamat Sore 🌇';
+        } else {
+            greet = 'Selamat Malam 🌙';
+        }
+        
+        greetElement.textContent = greet;
+    }
+    // ==========================================
+    // 1. KONFIGURASI & VARIABEL
+    // ==========================================
+    const modal = document.getElementById('addModal');
+    const openBtn = document.getElementById('quickAddBtn');
+    const closeBtn = document.getElementById('closeModalBtn');
+    const form = document.getElementById('addTaskForm');
+    const taskList = document.getElementById('taskList');
+
+    // Mengambil data dari LocalStorage saat pertama kali load
+    // Jika tidak ada data, gunakan array kosong []
+    let tasks = JSON.parse(localStorage.getItem('studentOS_tasks')) || [];
+    let schedules = JSON.parse(localStorage.getItem('studentOS_schedules')) || [];
+    let competitions = JSON.parse(localStorage.getItem('studentOS_comps_v3')) || [];
+    const saveComps = () => localStorage.setItem('studentOS_comps_v3', JSON.stringify(competitions));
+
+    const saveTasks = () => localStorage.setItem('studentOS_tasks', JSON.stringify(tasks));
+    const saveSchedules = () => localStorage.setItem('studentOS_schedules', JSON.stringify(schedules));
+    // ==========================================
+    // 2. FUNGSI UTAMA (RENDER & SAVE)
+    // ==========================================
+    
+    // ==========================================
+    // LOGIKA FOCUS MODE & COUNTDOWN TIMER
+    // ==========================================
+    
+    // Default Data jika kosong
+    let focusData = JSON.parse(localStorage.getItem('studentOS_focus')) || {
+        title: "Matematika Lanjut",
+        time: "13.00",
+        desc: "Ruang 302 • Pak Hartono",
+        deadline: null // Format ISO Date String
+    };
+
+    // DOM Elements
+    const focusTitleEl = document.getElementById('focusTitleDisplay');
+    const focusTimeEl = document.getElementById('focusTimeDisplay');
+    const focusDescEl = document.getElementById('focusDescDisplay');
+    const countdownEl = document.getElementById('countdownDisplay');
+    
+    const focusModal = document.getElementById('focusModal');
+    const inputFocusTitle = document.getElementById('inputFocusTitle');
+    const inputFocusTime = document.getElementById('inputFocusTime');
+    const inputFocusDesc = document.getElementById('inputFocusDesc');
+    const inputDeadline = document.getElementById('inputDeadline');
+
+    // Render Tampilan Awal
+    function renderFocus() {
+        focusTitleEl.textContent = focusData.title;
+        focusTimeEl.textContent = focusData.time;
+        focusDescEl.textContent = focusData.desc;
+        updateCountdown(); // Trigger hitung mundur
+    }
+
+    // Fungsi Hitung Mundur Real-time
+    function updateCountdown() {
+        if (!focusData.deadline) {
+            countdownEl.innerHTML = '<span class="text-slate-500">Belum diset</span>';
+            return;
+        }
+
+        const now = new Date().getTime();
+        const target = new Date(focusData.deadline).getTime();
+        const distance = target - now;
+
+        if (distance < 0) {
+            countdownEl.innerHTML = '<span class="text-red-500 font-bold">Waktu Habis!</span>';
+        } else {
+            // Hitung Hari, Jam, Menit
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+
+            let timeString = "";
+            if (days > 0) timeString += `${days} Hari `;
+            timeString += `${hours} Jam ${minutes} Menit`;
+
+            countdownEl.innerHTML = `<i data-lucide="timer" class="w-3 h-3"></i> ${timeString} lagi`;
+        }
+    }
+
+    // Update countdown setiap 1 menit (60000ms) agar tidak berat
+    setInterval(updateCountdown, 60000);
+
+    // Event Listeners
+    document.getElementById('editFocusBtn').addEventListener('click', () => {
+        inputFocusTitle.value = focusData.title;
+        inputFocusTime.value = focusData.time;
+        inputFocusDesc.value = focusData.desc;
+        // Format datetime-local value (YYYY-MM-DDTHH:MM)
+        if(focusData.deadline) {
+            // Kita ambil format yg pas buat input datetime-local
+            const d = new Date(focusData.deadline);
+            // trik simpel convert ke local ISO string (tanpa Z)
+            const localIso = new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
+            inputDeadline.value = localIso;
+        }
+        focusModal.classList.remove('hidden');
+    });
+
+    document.getElementById('closeFocusModal').addEventListener('click', (e) => {
+        e.preventDefault();
+        focusModal.classList.add('hidden');
+    });
+
+    document.getElementById('editFocusForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        focusData.title = inputFocusTitle.value;
+        focusData.time = inputFocusTime.value;
+        focusData.desc = inputFocusDesc.value;
+        focusData.deadline = inputDeadline.value ? new Date(inputDeadline.value).toISOString() : null;
+        
+        localStorage.setItem('studentOS_focus', JSON.stringify(focusData));
+        renderFocus();
+        focusModal.classList.add('hidden');
+    });
+
+    // Init Render
+    renderFocus();
+    // Fungsi untuk menyimpan ke database browser
+    function saveToLocalStorage() {
+        localStorage.setItem('studentOS_tasks', JSON.stringify(tasks));
+    }
+
+    // Fungsi untuk menampilkan (Render) list tugas ke layar
+   // ==========================================
+    // LOGIKA TASK (RENDER DENGAN BANYAK KATEGORI)
+    // ==========================================
+    document.getElementById('addTaskForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const name = document.getElementById('taskInput').value;
+        const time = document.getElementById('taskTime').value; // Ambil nilai waktu
+        const category = document.querySelector('input[name="category"]:checked').value;
+        
+        // Masukkan ke array (tambah properti time)
+        tasks.unshift({ name, category, time });
+        
+        saveTasks();
+        renderTasks();
+        
+        e.target.reset();
+        document.getElementById('addModal').classList.add('hidden');
+    });
+   // ==========================================
+    // LOGIKA TASK (ANTI GHOST DATA)
+    // ==========================================
+    
+    function renderTasks() {
+        const taskList = document.getElementById('taskList');
+        taskList.innerHTML = '';
+        
+        // 1. FILTER PEMBERSIH: Hapus tugas yang namanya kosong/spasi doang
+        // Ini akan otomatis menghapus "Ghost Data" yang tersangkut di memori
+        const initialCount = tasks.length;
+        tasks = tasks.filter(task => task.name && task.name.trim() !== "");
+        
+        // Jika ada yang dihapus, simpan versi bersihnya ke LocalStorage
+        if (tasks.length !== initialCount) {
+            saveTasks(); 
+        }
+        tasks.sort((a, b) => {
+            // Jika A tidak punya waktu, lempar ke bawah (return 1)
+            if (!a.time) return 1;
+            // Jika B tidak punya waktu, berarti A menang (return -1)
+            if (!b.time) return -1;
+            // Jika keduanya punya waktu, bandingkan (Ascending: 07:00 dulu, baru 10:00)
+            return a.time.localeCompare(b.time);
+        });
+
+        // Simpan urutan yang sudah rapi ini
+        saveTasks();
+
+        const colorMap = {
+            'Akademik': 'bg-blue-500/20 text-blue-300 border-blue-500/20',
+            'OSIS': 'bg-purple-500/20 text-purple-300 border-purple-500/20',
+            'Lomba': 'bg-orange-500/20 text-orange-300 border-orange-500/20',
+            'Magang': 'bg-slate-500/20 text-slate-300 border-slate-500/20',
+            'Kuliah': 'bg-cyan-500/20 text-cyan-300 border-cyan-500/20',
+            'Belajar Mandiri': 'bg-emerald-500/20 text-emerald-300 border-emerald-500/20',
+            'Main Game': 'bg-pink-500/20 text-pink-300 border-pink-500/20'
+        };
+
+        tasks.forEach((task, index) => {
+            const badgeColor = colorMap[task.category] || 'bg-slate-500/20 text-slate-300 border-slate-500/20';
+
+            const timeBadge = task.time 
+                ? `<span class="text-[10px] px-2 py-0.5 rounded border border-white/10 text-slate-400 bg-white/5 flex items-center gap-1 shrink-0">
+                     <i data-lucide="clock" class="w-3 h-3"></i> ${task.time}
+                   </span>`
+                : '';
+
+            const html = `
+                <div class="group flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/5 transition animate-fade-in">
+                    <button onclick="deleteTask(${index})" class="w-5 h-5 rounded-md border-2 border-slate-500 hover:border-green-500 hover:bg-green-500/20 flex items-center justify-center transition group/btn shrink-0">
+                        <i data-lucide="check" class="w-3 h-3 text-green-500 opacity-0 group-hover/btn:opacity-100 transition"></i>
+                    </button>
+                    
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-slate-200 truncate">${task.name}</p>
+                    </div>
+
+                    ${timeBadge}
+                    <span class="text-[10px] px-2 py-0.5 rounded border ${badgeColor} shrink-0 whitespace-nowrap">${task.category}</span>
+                </div>`;
+            taskList.insertAdjacentHTML('beforeend', html);
+        });
+        
+        lucide.createIcons();
+        renderProductivity();
+    }
+    // Fungsi Hapus Tugas
+    window.deleteTask = function(index) {
+        // Hapus 1 item dari array berdasarkan index
+        tasks.splice(index, 1); 
+        saveToLocalStorage();
+        renderTasks();
+    };
+
+    // ==========================================
+    // 3. EVENT LISTENERS (INTERAKSI)
+    // ==========================================
+
+    // Buka Modal
+    openBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+    
+    // Tutup Modal
+    closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal.firstElementChild) modal.classList.add('hidden');
+    });
+
+    // Submit Form (Tambah Data)
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const taskName = document.getElementById('taskInput').value;
+        const category = document.querySelector('input[name="category"]:checked').value;
+
+        // Masukkan data baru ke Array (Paling atas/depan)
+        tasks.unshift({
+            name: taskName,
+            category: category,
+            date: new Date().toISOString()
+        });
+
+        saveToLocalStorage(); // Simpan
+        renderTasks();        // Tampilkan ulang
+        
+        form.reset();
+        modal.classList.add('hidden');
+    });
+
+    // ==========================================
+    // 4. FITUR LAIN (JAM & CHART)
+    // ==========================================
+    // 3. LOGIKA SCHEDULE (JADWAL) - BARU!
+    // ==========================================
+    const schedContainer = document.getElementById('scheduleContainer');
+    const schedModal = document.getElementById('scheduleModal');
+
+    // Helper: Ubah angka hari (0-6) jadi Nama Hari
+    const getDayName = (dayIndex) => ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'][dayIndex];
+
+   // ==========================================
+    // REVISI: FULL WEEK VIEW (SENIN - MINGGU)
+    // ==========================================
+    // ==========================================
+
+    // ==========================================
+    // LOGIKA ORGANIZATION HUB
+    // ==========================================
+    // ==========================================
+    // ==========================================
+    // LOGIKA PRODUKTIVITAS & CHART (AUTO-COUNT)
+    // ==========================================
+    
+    // Default Data
+    let prodData = JSON.parse(localStorage.getItem('studentOS_prod')) || {
+        streak: 5,
+        levelName: "Scholar",
+        currentXP: 1200,
+        targetXP: 2000,
+        chart: [50, 30, 20] // Belajar, Organisasi, Istirahat
+    };
+
+    // DOM Elements
+    const streakDisplay = document.getElementById('streakDisplay');
+    const levelDisplay = document.getElementById('levelDisplay');
+    const xpTextDisplay = document.getElementById('xpTextDisplay');
+    const xpBar = document.getElementById('xpBar');
+    const chartCenterText = document.getElementById('chartCenterText');
+    const totalTasksDisplay = document.getElementById('totalTasksDisplay');
+    const totalCompsDisplay = document.getElementById('totalCompsDisplay');
+    
+    // Modal Elements
+    const prodModal = document.getElementById('prodModal');
+    const inputStreak = document.getElementById('inputStreak');
+    const inputLevelName = document.getElementById('inputLevelName');
+    const inputCurrentXP = document.getElementById('inputCurrentXP');
+    const inputTargetXP = document.getElementById('inputTargetXP');
+    const inputChart1 = document.getElementById('inputChart1');
+    const inputChart2 = document.getElementById('inputChart2');
+    const inputChart3 = document.getElementById('inputChart3');
+
+    // Init Chart
+    let productivityChart;
+    
+    // ==========================================
+    // LOGIKA PRODUKTIVITAS (AUTO XP & LEVELING)
+    // ==========================================
+    
+    // --- 1. Fungsi Render Produktivitas ---
+   
+    // --- 2. Helper: Tambah XP ---
+ // ==========================================
+    // LOGIKA GAMIFIKASI & PRODUKTIVITAS (FIXED 100%)
+    // ==========================================
+
+    // 1. LOAD DATA PRODUKTIVITAS
+    // Pastikan variabel ini ada di bagian paling atas script
+    // let prodData = JSON.parse(localStorage.getItem('studentOS_prod')) || { ... };
+
+    // 2. FUNGSI RENDER PRODUKTIVITAS (TAMPILAN)
+    function renderProductivity() {
+        const current = prodData.currentXP;
+        const target = prodData.targetXP; // Target Tetap (Misal 2000)
+
+        // Hitung Persentase: (XP Saat Ini / Target) * 100
+        let percent = 0;
+        if (target > 0) {
+            percent = Math.round((current / target) * 100);
+        }
+        
+        // Batasi visual bar mentok di 100% (Visual saja, XP aslinya boleh lebih)
+        const visualPercent = Math.min(100, percent);
+
+        // Update Teks DOM
+        if(document.getElementById('streakDisplay')) 
+            document.getElementById('streakDisplay').textContent = `${prodData.streak} Hari Streak!`;
+        
+        // Level Logic (Naik tiap 1000 XP)
+        const currentLevel = Math.floor(current / 1000) + 1;
+        if(document.getElementById('levelDisplay'))
+            document.getElementById('levelDisplay').textContent = `Level ${currentLevel} ${prodData.levelName}`;
+        
+        // XP Text (Contoh: 1500 / 2000 XP)
+        if(document.getElementById('xpTextDisplay'))
+            document.getElementById('xpTextDisplay').textContent = `${current} / ${target} XP`;
+        
+        // Update Bar Width (Pink Bar)
+        if(document.getElementById('xpBar'))
+            document.getElementById('xpBar').style.width = `${visualPercent}%`;
+        
+        // Update Angka Tengah Donut Chart
+        if(document.getElementById('chartCenterText'))
+            document.getElementById('chartCenterText').textContent = `${percent}%`;
+
+        // Update Chart Data Visual
+        if(typeof productivityChart !== 'undefined' && productivityChart) {
+            productivityChart.data.datasets[0].data = prodData.chart;
+            productivityChart.update();
+        }
+
+        // Update Counter Jumlah (Tugas & Lomba)
+        const totalTasksDisplay = document.getElementById('totalTasksDisplay');
+        const totalCompsDisplay = document.getElementById('totalCompsDisplay');
+        
+        // Ambil panjang array tasks & competitions global
+        if(totalTasksDisplay) totalTasksDisplay.textContent = (typeof tasks !== 'undefined') ? tasks.length : 0;
+        if(totalCompsDisplay) totalCompsDisplay.textContent = (typeof competitions !== 'undefined') ? competitions.length : 0;
+    }
+
+    // 3. HELPER: TAMBAH XP (CORE LOGIC)
+    function addXP(amount) {
+        prodData.currentXP += amount;
+        
+        // Mencegah XP minus
+        if (prodData.currentXP < 0) prodData.currentXP = 0; 
+        
+        // SIMPAN KE LOCAL STORAGE (PENTING!)
+        localStorage.setItem('studentOS_prod', JSON.stringify(prodData));
+        
+        // Render ulang tampilan agar angka berubah langsung
+        renderProductivity(); 
+        
+        console.log(`XP Updated: ${amount > 0 ? '+' : ''}${amount}. Total: ${prodData.currentXP}`);
+    }
+
+    // 4. OVERRIDE: SELESAI TUGAS (TRIGGER XP)
+    window.deleteTask = function(index) {
+        // Hapus tugas dari array
+        tasks.splice(index, 1);
+        saveTasks();       // Simpan array tasks
+        renderTasks();     // Render ulang list tugas
+        
+        // REWARD: Tambah 50 XP
+        addXP(50);
+    };
+
+    // 5. OVERRIDE: CHECKLIST FASE LOMBA (TRIGGER XP)
+    window.togglePhase = function(compIndex, phaseIndex) {
+        const phase = competitions[compIndex].phases[phaseIndex];
+        
+        // Ubah status (True/False)
+        phase.done = !phase.done;
+        
+        // LOGIKA REWARD:
+        if (phase.done) {
+            addXP(100); // Kalau dicentang -> Tambah XP
+        } else {
+            addXP(-100); // Kalau dibatalin -> Kurang XP
+        }
+
+        saveComps();          // Simpan array kompetisi
+        renderCompetitions(); // Render ulang list kompetisi
+    };
+
+    // Panggil render sekali di awal untuk memastikan tampilan benar
+   
+    // --- 5. Init Chart (Sama seperti sebelumnya) ---
+   
+   function initChart() {
+        const ctx = document.getElementById('productivityChart').getContext('2d');
+        
+        // FIX: Hancurkan chart lama jika ada sebelum buat baru
+        if (productivityChart) {
+            productivityChart.destroy();
+        }
+
+        productivityChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Belajar', 'Organisasi', 'Istirahat'],
+                datasets: [{
+                    data: prodData.chart,
+                    backgroundColor: ['#3b82f6', '#a855f7', '#10b981'],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: { legend: { display: false }, tooltip: { enabled: true } },
+                animation: { animateScale: true, animateRotate: true }
+            }
+        });
+    }
+    // --- 6. Event Listener Modal Edit (Hanya Streak & Target) ---
+    document.getElementById('editProdBtn').addEventListener('click', () => {
+        document.getElementById('inputStreak').value = prodData.streak;
+        document.getElementById('inputLevelName').value = prodData.levelName;
+        document.getElementById('inputTargetXP').value = prodData.targetXP; // Target tetap bisa diedit
+        
+        // Slider values
+        document.getElementById('inputChart1').value = prodData.chart[0];
+        document.getElementById('inputChart2').value = prodData.chart[1];
+        document.getElementById('inputChart3').value = prodData.chart[2];
+        
+        // Update label angka slider
+        document.getElementById('val1').textContent = prodData.chart[0] + '%';
+        document.getElementById('val2').textContent = prodData.chart[1] + '%';
+        document.getElementById('val3').textContent = prodData.chart[2] + '%';
+        
+        document.getElementById('prodModal').classList.remove('hidden');
+    });
+
+    // Slider Listeners
+    ['inputChart1', 'inputChart2', 'inputChart3'].forEach((id, idx) => {
+        document.getElementById(id).addEventListener('input', (e) => {
+            document.getElementById(`val${idx+1}`).textContent = e.target.value + '%';
+        });
+    });
+
+    document.getElementById('closeProdModal').addEventListener('click', (e) => {
+        e.preventDefault();
+        document.getElementById('prodModal').classList.add('hidden');
+    });
+
+    document.getElementById('editProdForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        prodData.streak = parseInt(document.getElementById('inputStreak').value);
+        prodData.levelName = document.getElementById('inputLevelName').value;
+        prodData.targetXP = parseInt(document.getElementById('inputTargetXP').value); // Update target
+        
+        // XP Saat ini TIDAK DIUBAH disini (tetap ambil value lama) karena otomatis
+        
+        prodData.chart = [
+            parseInt(document.getElementById('inputChart1').value),
+            parseInt(document.getElementById('inputChart2').value),
+            parseInt(document.getElementById('inputChart3').value)
+        ];
+
+        localStorage.setItem('studentOS_prod', JSON.stringify(prodData));
+        renderProductivity();
+        document.getElementById('prodModal').classList.add('hidden');
+    });
+
+    // Panggil Init
+    initChart();
+    renderProductivity();
+    
+    // Tambahkan listener agar saat nambah tugas/lomba, angka di sini ikut update
+    // Caranya: panggil renderProductivity() di akhir fungsi renderTasks() dan renderCompetitions() kamu nanti.
+    // LOGIKA ORGANIZATION HUB (DENGAN LINK MAPS)
+    // ==========================================
+   // ==========================================
+    // LOGIKA ORGANIZATION HUB (ANTI-NYUNGSEP)
+    // ==========================================
+    const orgContainer = document.getElementById('orgContainer');
+    const orgModal = document.getElementById('orgModal');
+
+    // Key v2 agar data aman
+    let organizations = JSON.parse(localStorage.getItem('studentOS_orgs_v2')) || [];
+    const saveOrgs = () => localStorage.setItem('studentOS_orgs_v2', JSON.stringify(organizations));
+
+ function renderOrganizations() {
+        orgContainer.innerHTML = '';
+
+        if (organizations.length === 0) {
+            orgContainer.innerHTML = `
+                <div class="col-span-full flex flex-col items-center justify-center border-2 border-dashed border-white/5 rounded-2xl bg-white/[0.02] h-[200px]">
+                    <i data-lucide="users" class="w-10 h-10 mb-3 text-slate-500"></i>
+                    <p class="text-sm text-slate-400 font-medium">Belum ada organisasi</p>
+                </div>`;
+        } else {
+            organizations.forEach((org, index) => {
+                const bgStyle = index % 2 === 0 
+                    ? 'bg-gradient-to-br from-[#2e1065] to-[#1e1b4b] border-purple-500/20' 
+                    : 'bg-white/5 border-white/5 hover:bg-white/10';
+
+                const locationHTML = org.mapLink 
+                    ? `<a href="${org.mapLink}" target="_blank" class="flex items-center gap-2 text-xs text-blue-300 hover:text-blue-200 hover:underline transition z-20 relative cursor-pointer w-full">
+                         <i data-lucide="map-pin" class="w-3.5 h-3.5 text-purple-400 shrink-0"></i> <span class="truncate">${org.location}</span> <i data-lucide="external-link" class="w-3 h-3 opacity-50 shrink-0"></i>
+                       </a>`
+                    : `<div class="flex items-center gap-2 text-xs text-slate-300 w-full">
+                         <i data-lucide="map-pin" class="w-3.5 h-3.5 text-purple-400 shrink-0"></i> <span class="truncate">${org.location}</span>
+                       </div>`;
+
+                orgContainer.innerHTML += `
+                <div class="${bgStyle} p-4 rounded-2xl border transition relative group flex flex-col w-full h-full shadow-lg">
+                    
+                    <button onclick="deleteOrg(${index})" class="absolute top-3 right-3 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition z-30 bg-black/40 p-1.5 rounded-lg backdrop-blur-sm">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+
+                    <div class="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+                        <i data-lucide="award" class="w-20 h-20 text-white"></i>
+                    </div>
+
+                    <div class="relative z-10 shrink-0">
+                        <span class="text-[10px] font-bold tracking-wider text-purple-300 uppercase block mb-1 truncate pr-8 opacity-80">${org.name}</span>
+                        <h4 class="text-white font-bold text-lg mb-3 leading-tight line-clamp-2">${org.role}</h4>
+                        
+                        <div class="space-y-2 mb-4">
+                            <div class="flex items-center gap-2 text-xs text-slate-300">
+                                <i data-lucide="calendar" class="w-3.5 h-3.5 text-purple-400 shrink-0"></i> ${org.schedule}
+                            </div>
+                            ${locationHTML}
+                        </div>
+                    </div>
+
+                    ${org.task ? `
+                    <div class="relative z-10 mt-auto pt-2 border-t border-white/5">
+                        <div class="bg-black/30 rounded-xl p-3 backdrop-blur-md border border-white/5 hover:border-purple-500/30 transition">
+                            <p class="text-[9px] text-slate-400 mb-2 uppercase tracking-wide flex items-center gap-1 font-bold">
+                                <i data-lucide="bell" class="w-3 h-3 text-yellow-500"></i> Reminder
+                            </p>
+                            
+                            <div class="h-16 overflow-y-auto pr-2 custom-scrollbar">
+                                <p class="text-xs text-white font-medium leading-relaxed whitespace-pre-line">${org.task}</p>
+                            </div>
+                        </div>
+                    </div>
+                    ` : '<div class="mt-auto"></div>'} 
+                </div>`;
+            });
+        }
+        lucide.createIcons();
+    }
+
+    // --- EVENT LISTENERS (Tetap Sama) ---
+    document.getElementById('addOrgBtn').addEventListener('click', () => orgModal.classList.remove('hidden'));
+    document.getElementById('closeOrgModal').addEventListener('click', () => orgModal.classList.add('hidden'));
+
+    document.getElementById('addOrgForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('orgName').value;
+        const role = document.getElementById('orgRole').value;
+        const schedule = document.getElementById('orgSchedule').value;
+        const location = document.getElementById('orgLocation').value;
+        const mapLink = document.getElementById('orgMapLink').value;
+        const task = document.getElementById('orgTask').value;
+
+        organizations.push({ name, role, schedule, location, mapLink, task });
+        saveOrgs();
+        renderOrganizations();
+        
+        e.target.reset();
+        orgModal.classList.add('hidden');
+    });
+
+    window.deleteOrg = function(index) {
+        if(confirm('Keluar dari organisasi ini?')) {
+            organizations.splice(index, 1);
+            saveOrgs();
+            renderOrganizations();
+        }
+    };
+
+    renderOrganizations();
+
+    // LOGIKA COMPETITION TRACKER (COMMA SEPARATED)
+    // ==========================================
+
+    const compContainer = document.getElementById('compContainer');
+    const compModal = document.getElementById('compModal');
+    
+    // Key storage baru '_v3' untuk format data baru
+   
+    function renderCompetitions() {
+        compContainer.innerHTML = '';
+        
+        if (competitions.length === 0) {
+            compContainer.innerHTML = `
+                <div class="flex flex-col items-center justify-center h-full opacity-50">
+                    <i data-lucide="trophy" class="w-10 h-10 mb-2 text-slate-500"></i>
+                    <p class="text-xs text-slate-400">Belum ada kompetisi</p>
+                </div>`;
+        } else {
+            competitions.forEach((comp, cIndex) => {
+                // Hitung Progress
+                const totalPhases = comp.phases.length;
+                const completedPhases = comp.phases.filter(p => p.done).length;
+                const progressPercent = totalPhases === 0 ? 0 : Math.round((completedPhases / totalPhases) * 100);
+
+                // Generate Checklist HTML
+                let phasesHTML = '';
+                comp.phases.forEach((phase, pIndex) => {
+                    // Checkbox Logic
+                    const checkIcon = phase.done 
+                        ? `<div class="w-4 h-4 bg-green-500 rounded flex items-center justify-center text-[#0f172a] shadow-[0_0_10px_rgba(34,197,94,0.5)]"><i data-lucide="check" class="w-3 h-3 stroke-[4]"></i></div>`
+                        : `<div class="w-4 h-4 border-2 border-slate-600 rounded group-hover/item:border-orange-500 transition"></div>`;
+                    
+                    const textStyle = phase.done 
+                        ? `text-slate-500 line-through decoration-slate-600` 
+                        : `text-slate-300 group-hover/item:text-white`;
+
+                    phasesHTML += `
+                        <div onclick="togglePhase(${cIndex}, ${pIndex})" class="group/item flex items-start gap-3 py-1.5 cursor-pointer select-none transition">
+                            <div class="mt-0.5 shrink-0 transition-transform active:scale-90">${checkIcon}</div>
+                            <span class="text-xs font-medium ${textStyle} transition-colors">${phase.text}</span>
+                        </div>
+                    `;
+                });
+
+                // Render Card
+                compContainer.innerHTML += `
+                <div class="glass-card p-5 rounded-2xl border border-white/5 relative group mb-4 hover:border-orange-500/30 transition-all duration-300 bg-[#0f172a]/40">
+                    
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <span class="text-[10px] font-bold tracking-wider text-orange-400 uppercase mb-1 block">${comp.level}</span>
+                            <h4 class="font-bold text-white text-md leading-tight">${comp.name}</h4>
+                        </div>
+                        <button onclick="deleteComp(${cIndex})" class="p-1.5 text-slate-600 hover:text-red-500 transition opacity-0 group-hover:opacity-100">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="flex-1 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-orange-500 to-red-500 transition-all duration-500" style="width: ${progressPercent}%"></div>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-mono">${progressPercent}%</span>
+                    </div>
+
+                    <div class="space-y-1 pl-1">
+                        ${phasesHTML}
+                    </div>
+                </div>`;
+            });
+        }
+        lucide.createIcons();
+        renderProductivity();
+    }
+
+    // Toggle Checklist Function
+    window.togglePhase = function(compIndex, phaseIndex) {
+        competitions[compIndex].phases[phaseIndex].done = !competitions[compIndex].phases[phaseIndex].done;
+        saveComps();
+        renderCompetitions();
+    };
+
+    // Modal Logic
+    document.getElementById('addCompBtn').addEventListener('click', () => compModal.classList.remove('hidden'));
+    
+    document.getElementById('closeCompModal').addEventListener('click', (e) => {
+        e.preventDefault();
+        compModal.classList.add('hidden');
+    });
+
+    // Form Submit (Split by Comma Logic)
+    document.getElementById('addCompForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('compName').value;
+        const level = document.getElementById('compLevel').value;
+        const phasesText = document.getElementById('compPhases').value;
+        
+        // LOGIKA BARU: Split berdasarkan KOMA (,)
+        const phases = phasesText.split(',')
+            .map(text => text.trim()) // Hapus spasi di awal/akhir
+            .filter(text => text.length > 0) // Hapus yang kosong
+            .map(text => ({ text: text, done: false })); // Jadikan object
+
+        competitions.unshift({ name, level, phases });
+        
+        saveComps();
+        renderCompetitions();
+        
+        e.target.reset();
+        compModal.classList.add('hidden');
+    });
+
+    window.deleteComp = function(index) {
+        if(confirm('Hapus kompetisi ini?')) {
+            competitions.splice(index, 1);
+            saveComps();
+            renderCompetitions();
+        }
+    };
+
+    // Init Render
+    renderCompetitions();
+   // ==========================================
+    // LOGIKA SCHEDULE (FIXED HEIGHT & VERTICAL SCROLL)
+    // ==========================================
+    function renderSchedules() {
+        const schedContainer = document.getElementById('scheduleContainer');
+        schedContainer.innerHTML = '';
+        const todayIndex = new Date().getDay(); // 0=Minggu, 1=Senin, dst.
+        
+        // Urutan hari: Senin (1) s/d Minggu (0)
+        const weekOrder = [1, 2, 3, 4, 5, 6, 0]; 
+
+        weekOrder.forEach(dayIndex => {
+            const isToday = dayIndex === todayIndex;
+            
+            // Style khusus Hari Ini
+            const activeStyle = isToday 
+                ? 'border-blue-500/50 bg-white/5 shadow-[0_0_20px_rgba(59,130,246,0.1)]' 
+                : 'border-transparent hover:bg-white/5 bg-white/[0.02]';
+
+            const badgeToday = isToday 
+                ? `<span class="text-[10px] bg-blue-500 text-white px-2 py-0.5 rounded font-bold shadow-lg shadow-blue-500/50">HARI INI</span>` 
+                : '';
+
+            // Filter jadwal
+            let dailyScheds = schedules.filter(s => s.day == dayIndex).sort((a,b) => a.time.localeCompare(b.time));
+
+            let cardsHTML = '';
+            if (dailyScheds.length === 0) {
+                cardsHTML = `<div class="flex flex-col items-center justify-center h-32 text-slate-600 text-xs italic border border-dashed border-white/5 rounded-xl">
+                                <span>Tidak ada kelas</span>
+                             </div>`;
+            } else {
+                dailyScheds.forEach(s => {
+                    let originalIndex = schedules.indexOf(s);
+                    cardsHTML += `
+                        <div class="group relative p-3 rounded-xl bg-gradient-to-br from-[#1e293b] to-[#0f172a] border border-white/10 mb-2 hover:border-blue-400/50 transition shadow-sm shrink-0">
+                            <button onclick="deleteSchedule(${originalIndex})" class="absolute top-2 right-2 text-slate-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition z-10 bg-black/50 p-1 rounded">
+                                <i data-lucide="trash-2" class="w-3 h-3"></i>
+                            </button>
+                            <div class="flex items-center gap-3">
+                                <div class="w-1 self-stretch bg-blue-500 rounded-full"></div>
+                                <div>
+                                    <span class="text-[10px] text-blue-400 font-mono block mb-0.5">${s.time}</span>
+                                    <h4 class="text-white font-bold text-sm leading-tight line-clamp-2">${s.subject}</h4>
+                                    <p class="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
+                                        <i data-lucide="map-pin" class="w-3 h-3"></i> ${s.room}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            // Render Kolom Hari (Full Height)
+            const columnHTML = `
+                <div class="min-w-[280px] snap-start rounded-2xl p-4 border transition-all duration-300 ${activeStyle} flex flex-col h-full">
+                    <div class="font-semibold text-slate-300 mb-3 border-b border-white/10 pb-2 flex justify-between items-center shrink-0">
+                        <span class="${isToday ? 'text-blue-300' : 'text-slate-200'}">${getDayName(dayIndex).toUpperCase()}</span>
+                        ${badgeToday}
+                    </div>
+                    
+                    <div class="flex flex-col gap-1 overflow-y-auto flex-1 pr-1 custom-scrollbar">
+                        ${cardsHTML}
+                    </div>
+                </div>
+            `;
+            schedContainer.insertAdjacentHTML('beforeend', columnHTML);
+        });
+        
+        lucide.createIcons();
+    }
+    // Fungsi Tambah Jadwal
+    document.getElementById('addScheduleBtn').addEventListener('click', () => schedModal.classList.remove('hidden'));
+    document.getElementById('closeSchedModal').addEventListener('click', () => schedModal.classList.add('hidden'));
+
+    document.getElementById('addScheduleForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const subject = document.getElementById('schedSubject').value;
+        const day = document.getElementById('schedDay').value;
+        const time = document.getElementById('schedTime').value;
+        const room = document.getElementById('schedRoom').value;
+
+        schedules.push({ subject, day, time, room });
+        saveSchedules();
+        renderSchedules();
+        
+        e.target.reset();
+        schedModal.classList.add('hidden');
+    });
+
+    // Fungsi Hapus Jadwal
+    window.deleteSchedule = function(index) {
+        if(confirm('Hapus jadwal ini?')) {
+            schedules.splice(index, 1);
+            saveSchedules();
+            renderSchedules();
+        }
+    }
+
+    // ==========================================
+    // ==========================================
+    // LOGIKA NOTE TO SELF
+    // ==========================================
+    
+    // Ambil data dari LocalStorage, atau gunakan default jika kosong
+    let noteData = JSON.parse(localStorage.getItem('studentOS_note')) || {
+        text: "Jangan lupa istirahat, kamu bukan robot. Minum air putih yang cukup hari ini.",
+        water: "1.5L",
+        sleep: "7 Jam"
+    };
+
+    // DOM Elements
+    const noteTextEl = document.getElementById('noteText');
+    const waterTextEl = document.getElementById('waterText');
+    const sleepTextEl = document.getElementById('sleepText');
+    const noteModal = document.getElementById('noteModal');
+    const inputNote = document.getElementById('inputNote');
+    const inputWater = document.getElementById('inputWater');
+    const inputSleep = document.getElementById('inputSleep');
+
+    // Fungsi Render Tampilan
+    function renderNote() {
+        // Update teks di widget
+        noteTextEl.textContent = `"${noteData.text}"`;
+        waterTextEl.textContent = noteData.water;
+        sleepTextEl.textContent = noteData.sleep;
+    }
+
+    // Event Listeners
+    document.getElementById('editNoteBtn').addEventListener('click', () => {
+        // Isi form modal dengan data saat ini
+        inputNote.value = noteData.text;
+        inputWater.value = noteData.water;
+        inputSleep.value = noteData.sleep;
+        noteModal.classList.remove('hidden');
+    });
+
+    document.getElementById('closeNoteModal').addEventListener('click', (e) => {
+        e.preventDefault();
+        noteModal.classList.add('hidden');
+    });
+
+    document.getElementById('editNoteForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        // Simpan data baru ke object
+        noteData.text = inputNote.value;
+        noteData.water = inputWater.value;
+        noteData.sleep = inputSleep.value;
+        
+        // Simpan ke LocalStorage & Render ulang
+        localStorage.setItem('studentOS_note', JSON.stringify(noteData));
+        renderNote();
+        
+        noteModal.classList.add('hidden');
+    });
+
+    // Jalankan render saat awal
+    renderNote();
+    // 4. GLOBAL INIT
+    // ==========================================
+    renderTasks();
+    renderOrganizations();
+   
+    renderSchedules();
+    lucide.createIcons();
+    renderCompetitions();
+
+    // Clock
+    function updateClock() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('clock').textContent = `${hours}:${minutes}`;
+        document.getElementById('date').textContent = now.toLocaleDateString('id-ID', options);
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Chart
+    new Chart(document.getElementById('productivityChart').getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Belajar', 'Organisasi', 'Istirahat'],
+            datasets: [{ data: [50, 30, 20], backgroundColor: ['#3b82f6', '#a855f7', '#10b981'], borderWidth: 0 }]
+        },
+        options: { responsive: true, cutout: '75%', plugins: { legend: { display: false } } }
+    });
+
+    // Panggil render pertama kali saat web dibuka
+  
+
+    // Jam Real-time
+   
+    // Chart.js
+    const ctx = document.getElementById('productivityChart').getContext('2d');
+  
+
+</script>
+</body>
+</html>
