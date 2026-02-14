@@ -98,25 +98,8 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.4);
 }
-/* Sembunyikan Scrollbar tapi tetap bisa scroll */
-.custom-scrollbar::-webkit-scrollbar {
-    width: 0px;  /* Hilangkan lebar scrollbar vertical */
-    height: 0px; /* Hilangkan tinggi scrollbar horizontal */
-    background: transparent;
-}
-.custom-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
-}
 
-/* Animasi halus untuk modal */
-@keyframes blob {
-    0% { transform: scale(0.95); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
-}
-.animate-blob {
-    animation: blob 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
+
     </style>
 </head>
 <body class="text-slate-200 antialiased min-h-screen selection:bg-purple-500 selection:text-white pb-10">
@@ -127,76 +110,80 @@
 
     <div class="relative max-w-[1400px] mx-auto p-4 md:p-8">
         
-<header class="flex flex-col gap-6 mb-8">
+ <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
     
-    <div class="flex items-center justify-between">
-        <div id="profileBtn" class="flex items-center gap-3 md:gap-5 cursor-pointer group">
-            <div class="relative">
-                <div class="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-full opacity-75 blur"></div>
-                <img id="headerImg" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Profile" class="relative w-12 h-12 md:w-16 md:h-16 rounded-full border-2 border-[#0f172a] object-cover">
-                <div class="absolute bottom-0 right-0 w-3 h-3 md:w-4 md:h-4 bg-green-500 rounded-full border-2 border-[#0f172a] z-10"></div>
+   <div id="profileBtn" class="flex items-center gap-5 shrink-0 cursor-pointer group" title="Klik untuk edit profil">
+    <div class="relative transition transform group-hover:scale-105">
+        <div class="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-full opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 blur"></div>
+        <img id="headerImg" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Profile" class="relative w-16 h-16 rounded-full border-2 border-[#0f172a] object-cover">
+        <div class="absolute bottom-1 right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-[#0f172a] z-10"></div>
+    </div>
+    <div>
+        <h1 class="text-3xl font-bold text-white tracking-tight flex items-center gap-2">
+            Halo, <span id="headerName">Nabil</span>!
+            <i data-lucide="edit-2" class="w-4 h-4 text-slate-500 opacity-0 group-hover:opacity-100 transition"></i>
+        </h1>
+        <p id="headerStatus" class="text-sm text-slate-400 font-medium">StudentOS v1.0 • <span class="text-green-400">Online</span></p>
+    </div>
+</div>
+    <div class="flex-1 w-full md:w-auto order-3 md:order-2">
+        <div class="glass-card p-4 rounded-2xl border border-white/10 shadow-lg bg-black/20 backdrop-blur-xl flex flex-col sm:flex-row items-center justify-between gap-6">
+            
+            <div class="flex flex-col items-center sm:items-start text-center sm:text-left border-b sm:border-b-0 sm:border-r border-white/10 pb-4 sm:pb-0 sm:pr-6 min-w-[140px]">
+                <span id="greetingText" class="text-sm font-bold text-purple-300 uppercase tracking-wider mb-1">Good Morning</span>
+                <div class="flex items-center gap-2 text-slate-400 text-base">
+                    <i data-lucide="map-pin" class="w-3 h-3"></i>
+                    <span id="locationText">Mendeteksi...</span>
+                </div>
             </div>
-            <div>
-                <h1 class="text-xl md:text-3xl font-bold text-white tracking-tight flex items-center gap-2">
-                    Halo, <span id="headerName">Nabil</span>!
-                </h1>
-                <p id="headerStatus" class="text-xs md:text-sm text-slate-400 font-medium">StudentOS v1.0 • <span class="text-green-400">Online</span></p>
+
+            <div class="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-2 w-full">
+                <div class="col-span-2 sm:col-span-1 flex flex-col items-center justify-center mb-2 sm:mb-0">
+                    <img id="weatherIcon" src="" class="w-10 h-10 drop-shadow-md hidden" alt="weather">
+                    <span id="mainTemp" class="text-xl font-bold text-white">--°</span>
+                    <span id="weatherDesc" class="text-[10px] text-slate-400 capitalize">--</span>
+                </div>
+
+                <div class="flex flex-col items-center sm:items-start justify-center">
+                    <span class="text-[9px] text-slate-500 uppercase">Terasa</span>
+                    <div class="flex items-center gap-1 text-white font-medium text-xs">
+                        <i data-lucide="thermometer" class="w-10 h-10 text-orange-400"></i>
+                        <span id="feelsLike">--°</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-center sm:items-start justify-center">
+                    <span class="text-[9px] text-slate-500 uppercase">Lembap</span>
+                    <div class="flex items-center gap-1 text-white font-medium text-xs">
+                        <i data-lucide="droplet" class="w-10 h-10 text-blue-400"></i>
+                        <span id="humidity">--%</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-center sm:items-start justify-center">
+                    <span class="text-[9px] text-slate-500 uppercase">Angin</span>
+                    <div class="flex items-center gap-1 text-white font-medium text-xs">
+                        <i data-lucide="wind" class="w-10 h-10 text-cyan-400"></i>
+                        <span id="windSpeed">-- km/h</span>
+                    </div>
+                </div>
+
+                <div class="hidden sm:flex flex-col items-center sm:items-start justify-center sm:col-start-2 sm:row-start-2 lg:col-auto lg:row-auto">
+                     </div>
             </div>
         </div>
+    </div>
 
-        <button id="quickAddBtn" class="glass-card p-3 md:px-6 md:py-3 rounded-xl flex items-center gap-2 text-white font-semibold hover:bg-white/10 transition group border border-white/10">
-            <div class="bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg p-1">
+    <div class="shrink-0 order-2 md:order-3">
+        <button id="quickAddBtn" class="glass-card px-6 py-3 rounded-xl flex items-center gap-2 text-white font-semibold hover:bg-white/10 transition group">
+            <div class="bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg p-1 group-hover:scale-110 transition">
                 <i data-lucide="plus" class="w-4 h-4 text-white"></i>
             </div>
-            <span class="hidden md:inline">Quick Add</span>
+            <span>Quick Add</span>
         </button>
     </div>
-
-    <div class="w-full">
-        <div class="glass-card p-5 md:px-8 md:py-6 rounded-2xl md:rounded-[2rem] border border-white/10 bg-[#0f172a]/80 backdrop-blur-xl flex flex-col md:flex-row items-center gap-6 md:gap-10">
-            
-            <div class="flex flex-row md:flex-col items-center justify-between w-full md:w-auto md:border-r border-white/10 md:pr-10">
-                <div class="text-left md:text-center">
-                    <span id="greetingText" class="text-[10px] md:text-sm font-bold text-purple-400 uppercase tracking-wider block mb-1">LOADING...</span>
-                    <h2 class="text-2xl md:text-4xl font-black text-white whitespace-nowrap">Halo, <span id="greetingNameDynamic">Bro</span>!</h2>
-                </div>
-                <div class="flex items-center gap-1.5 text-slate-300 text-xs md:text-base font-medium bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
-                    <i data-lucide="map-pin" class="w-3 h-3 md:w-4 md:h-4 text-red-400"></i>
-                    <span id="locationText">...</span>
-                </div>
-            </div>
-
-            <div class="flex items-center justify-between w-full md:justify-start md:gap-10">
-                
-                <div class="flex items-center gap-3">
-                    <img id="weatherIcon" src="" class="w-12 h-12 md:w-20 md:h-20 drop-shadow-lg hidden filter saturate-150" alt="weather">
-                    <div class="flex flex-col leading-none">
-                        <span id="mainTemp" class="text-4xl md:text-6xl font-black text-white tracking-tighter">--°</span>
-                        <span id="weatherDesc" class="text-[10px] md:text-sm font-bold text-blue-300 capitalize mt-1">--</span>
-                    </div>
-                </div>
-
-                <div class="flex gap-4 md:gap-8 border-l border-white/10 pl-4 md:pl-10">
-                    <div class="text-center">
-                        <i data-lucide="thermometer" class="w-4 h-4 md:w-6 md:h-6 text-orange-400 mx-auto mb-1"></i>
-                        <span id="feelsLike" class="block text-sm md:text-xl font-bold text-white">--°</span>
-                        <span class="text-[9px] text-slate-500 uppercase">Feel</span>
-                    </div>
-                    <div class="text-center">
-                        <i data-lucide="droplet" class="w-4 h-4 md:w-6 md:h-6 text-blue-400 mx-auto mb-1"></i>
-                        <span id="humidity" class="block text-sm md:text-xl font-bold text-white">--%</span>
-                        <span class="text-[9px] text-slate-500 uppercase">Hum</span>
-                    </div>
-                    <div class="text-center">
-                        <i data-lucide="wind" class="w-4 h-4 md:w-6 md:h-6 text-cyan-400 mx-auto mb-1"></i>
-                        <span id="windSpeed" class="block text-sm md:text-xl font-bold text-white">--</span>
-                        <span class="text-[9px] text-slate-500 uppercase">Wind</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </header>
+
         <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
          
 
